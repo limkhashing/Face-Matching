@@ -1,0 +1,10 @@
+<!doctype html>
+<title>Face Matching</title>
+<h1>Upload a picture and a video and see if it's same person!</h1>
+<form method="POST" enctype="multipart/form-data" action="/api/upload">
+    <p> Upload the first picture:  <input type="file" name="original"> </p>
+
+    <p> Upload a video to compare:
+    <input type="file" name="unknown"> </p>
+  <input type="submit" value="Compare">
+</form>
