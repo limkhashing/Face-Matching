@@ -4,7 +4,7 @@ dlib
 face-recognition==1.2.3
 face-recognition-models==0.3.0
 Flask
-gunicorn
+gunicorn==19.9.0
 itsdangerous
 Jinja2
 MarkupSafe
