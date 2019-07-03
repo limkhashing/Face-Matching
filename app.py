@@ -1,17 +1,18 @@
+# Author: Lim Kha Shing
 # Reference
 # https://face-recognition.readthedocs.io/en/latest/_modules/face_recognition/api.html#compare_faces
 # https://raw.githubusercontent.com/ageitgey/face_recognition/master/examples/web_service_example.py
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
+
 import math
 import os
 import cv2
 import face_recognition
 
 from flask import Flask, jsonify, request, redirect, render_template
-
-# You can change this to any folder on your system
 from werkzeug.utils import secure_filename
 
+# You can change this to any folder on your system
 ALLOWED__PICTURE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
 ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm')
 
