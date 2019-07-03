@@ -2,7 +2,6 @@
 # https://face-recognition.readthedocs.io/en/latest/_modules/face_recognition/api.html#compare_faces
 # https://raw.githubusercontent.com/ageitgey/face_recognition/master/examples/web_service_example.py
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
-import glob
 import math
 import os
 import cv2
@@ -11,7 +10,11 @@ import face_recognition
 from flask import Flask, jsonify, request, redirect, render_template
 
 # You can change this to any folder on your system
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'webm'}
+from werkzeug.utils import secure_filename
+
+ALLOWED__PICTURE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
+ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm')
+
 app = Flask(__name__)
 
 # Constant variable for directory
@@ -35,10 +38,6 @@ def delete_files():
                 os.unlink(file_path)
         except Exception as e:
             print(e)
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def face_distance_to_conf(face_distance, face_match_threshold=0.6):
@@ -138,19 +137,25 @@ def upload_image():
     # Check if a valid image and video file was uploaded
     if request.method == 'POST':
         if 'original' not in request.files:
-            return redirect(request.url)
+            print("no files in original")
+            return redirect(request.url_root)
 
         if 'unknown' not in request.files:
-            return redirect(request.url)
+            print("no files in unknown")
+            return redirect(request.url_root)
 
         original = request.files['original']
         unknown = request.files['unknown']
 
-        if original.filename == '':
-            return redirect(request.url)
+        if not original.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
+            print(original.filename)
+            print("Picture extension is not correct")
+            return redirect(request.url_root)
 
-        if unknown.filename == '':
-            return redirect(request.url)
+        if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
+            print(unknown.filename)
+            print("Video extension is not correct")
+            return redirect(request.url_root)
 
         # Check if folder existed or not. If not then create it
         if not os.path.exists(app.config["VIDEO_FOLDER"]):
@@ -158,10 +163,11 @@ def upload_image():
         if not os.path.exists(app.config["FRAMES_FOLDER"]):
             os.makedirs(app.config["FRAMES_FOLDER"])
 
-        unknown.save(os.path.join(app.config["VIDEO_FOLDER"], unknown.filename))
+        unknown_filename = secure_filename(unknown.filename)
+        unknown.save(os.path.join(app.config["VIDEO_FOLDER"], unknown_filename))
 
-        if original and allowed_file(original.filename) and unknown and allowed_file(unknown.filename):
-            return face_comparison(original, unknown.filename)
+        if original and unknown:
+            return face_comparison(original, unknown_filename)
 
 
 @app.route('/')
