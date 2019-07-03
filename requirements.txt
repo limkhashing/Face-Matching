@@ -10,5 +10,6 @@ Jinja2
 MarkupSafe
 numpy
 opencv-python
+opencv-contrib-python
 Pillow
 Werkzeug
