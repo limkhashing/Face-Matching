@@ -9,11 +9,13 @@ This is a Flask Web APP / API that able to compare face that found in image and 
 * Gunicorn
 * Opencv
 
+
 ## Installing on Unix or Windows
 To run this project, install it locally using pip on a virtual environment by 
 ```sh
 pip install -r requirements.txt
 ```
+
 
 ## Deployment
 Deployment was done by using [Heroku](https://www.heroku.com/)  
@@ -22,17 +24,14 @@ You can try the web app that hosted [here](https://cardzone-face-matching.heroku
 
 
 ## Issues
-There are some issues when trying to deploy this app on the web. 
-Some of the issues are
-* dlib not able to install. Please see the link below for the fix
+There are some issues when trying to deploy this app on the web. Please see the link below for the fix. Some of the issues are
+* dlib not able to install.
   * https://github.com/ageitgey/face_recognition/issues/3
-* Opencv 
-* Additional buildpack / packages needed for running OpenCV in VM.
+* Additional buildpack / packages needed for installing OpenCV in VM.
   * https://elements.heroku.com/buildpacks/j-a-m-e-5/heroku16-buildpack-python-opencv-dlib
+  * https://stackoverflow.com/questions/49469764/how-to-use-opencv-with-heroku/51004957
 
-https://stackoverflow.com/questions/49469764/how-to-use-opencv-with-heroku/51004957
-
-aptfile
+Aptfile
 
 opencv-python-headless
 
