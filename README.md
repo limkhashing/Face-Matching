@@ -16,5 +16,4 @@ requirements.txt
 
 
 ## Authors
-
-* **[Lim Kha Shing]**(https://www.linkedin.com/in/lim-kha-shing-836a24120/)
+**[Lim Kha Shing]**(https://www.linkedin.com/in/lim-kha-shing-836a24120/)
