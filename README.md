@@ -3,7 +3,7 @@
 This is a Flask Web APP / API that able to compare face that found in image and video.
 
 
-## Tech/Framework used
+## Tech/Framework used [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 * [Face_Recognition python package](https://github.com/ageitgey/face_recognition) 
 * Flask
 * Gunicorn
@@ -22,18 +22,18 @@ You can try the web app that hosted [here](https://cardzone-face-matching.heroku
 
 
 ## Issues
-They're bound to have issues when using this app on the web. 
-Some of the issue is
-* dlib not able to install. Please see the link below for fix
+There are some issues when trying to deploy this app on the web. 
+Some of the issues are
+* dlib not able to install. Please see the link below for the fix
+  * https://github.com/ageitgey/face_recognition/issues/3
 * Opencv 
-* you can use a buildpack to install apt libs.
+* Additional buildpack / packages needed for running OpenCV in VM.
+  * https://elements.heroku.com/buildpacks/j-a-m-e-5/heroku16-buildpack-python-opencv-dlib
 
-https://github.com/ageitgey/face_recognition/issues/3
-https://elements.heroku.com/buildpacks/j-a-m-e-5/heroku16-buildpack-python-opencv-dlib
-https://github.com/jeromevonk/flask_face_detection
+https://stackoverflow.com/questions/49469764/how-to-use-opencv-with-heroku/51004957
 
 aptfile
-dlib
+
 opencv-python-headless
 
 ## Authors
