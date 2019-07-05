@@ -1,4 +1,4 @@
-# Face-Comparison [![js-standard-style](https://img.shields.io/appveyor/ci/gruntjs/grunt.svg)]
+# Face-Comparison ![js-standard-style](https://img.shields.io/appveyor/ci/gruntjs/grunt.svg)
 > This is a simple Python/Flask application that intended to compare face that found in an image and short video. It will return a JSON whether face found in image and video, a confidence percentage and whether is matched or not
 
 
