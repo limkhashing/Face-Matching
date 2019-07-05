@@ -3,7 +3,6 @@
 
 
 ## Tech/Framework used
-
 * [Face_Recognition python package](https://github.com/ageitgey/face_recognition) 
 * Flask
 * Gunicorn
@@ -23,14 +22,15 @@ pip install -r requirements.txt
 
 
 ## Deployment
-Deployment was done by using [Heroku](https://www.heroku.com/)  
-Procfile is used to specifies the commands that are executed by the app on startup.  
-Aptfile is used to install additional software packages that application requires
+* Deployment was done by using [Heroku](https://www.heroku.com/)  
+* Procfile is used to specifies the commands that are executed by the app on startup.  
+* Aptfile is used to install additional software packages that application requires
 You can try the web app that hosted [here](https://cardzone-face-matching.herokuapp.com/)
 
 
 ## Issues
-There are some issues when trying to deploy this app on the web. Please see the link below for the fix. Some of the issues are
+There are some issues when trying to deploy this app on the web. Please see the link below for the fix.  
+Some of the issues are
 * dlib not able to install.
   * https://github.com/ageitgey/face_recognition/issues/3
 * Additional buildpack / Linux packages needed for installing OpenCV in VM.
