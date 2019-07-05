@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ## Deployment
 Deployment was done by using [Heroku](https://www.heroku.com/)  
 Procfile is used to specifies the commands that are executed by the app on startup.  
-Aptfile 
+Aptfile is used to install additional software packages that application requires
 You can try the web app that hosted [here](https://cardzone-face-matching.herokuapp.com/)
 
 
@@ -34,7 +34,7 @@ There are some issues when trying to deploy this app on the web. Please see the 
   * https://github.com/ageitgey/face_recognition/issues/3
 * Additional buildpack / Linux packages needed for installing OpenCV in VM.
   * https://elements.heroku.com/buildpacks/j-a-m-e-5/heroku16-buildpack-python-opencv-dlib
-https://elements.heroku.com/buildpacks/eventastic/heroku-buildpack-apt
+  * https://elements.heroku.com/buildpacks/eventastic/heroku-buildpack-apt
   * https://stackoverflow.com/questions/49469764/how-to-use-opencv-with-heroku/51004957
   * https://stackoverflow.com/questions/47113029/importerror-libsm-so-6-cannot-open-shared-object-file-no-such-file-or-directo
 
