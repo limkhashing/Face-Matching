@@ -9,7 +9,7 @@ import os
 import cv2
 import face_recognition
 
-from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask, jsonify, request, redirect, render_template, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 
 # You can change this to any folder on your system
@@ -62,12 +62,12 @@ def extract_frames_from_video(video_name):
         success, image = vidcap.read()
         if not success:
             break
-        print('Read a new frame: ', success)
+        print('Writing a new frame: ', success)
         cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame%d.jpg") % count, image) # save frame as JPEG file
         count = count + 1
 
 
-def face_comparison(original, video_name):
+def face_comparison(original, video_name, threshold=0.6):
     extract_frames_from_video(video_name)
 
     # declare json key and default value pair
@@ -91,6 +91,8 @@ def face_comparison(original, video_name):
         face_found_in_image = True
 
         # loop through frames folder
+        print("Face matching start")
+        print("Found face in image")
         for frame in os.listdir(app.config["FRAMES_FOLDER"]):
             absoulute_video_frame_directory_file = os.path.join(app.config["FRAMES_FOLDER"], frame)
 
@@ -99,8 +101,10 @@ def face_comparison(original, video_name):
 
             # if extracted unknown frames have face, we proceed to compare it against original
             if len(unknown_face_encodings) > 0:
+
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_found_in_video = True
+                print("Found face in video")
 
                 # get the confidence rate
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
@@ -110,14 +114,13 @@ def face_comparison(original, video_name):
 
     # average the final confidence value
     final_confidence = final_confidence / count
-    print("Final Confidence = ", final_confidence)
 
     # See if the first face in the uploaded image matches the known face
     # provide tolerance level to specify how strict it is. By default is 0.6
     # Uncomment below for use the API
     # match_results = face_recognition.compare_faces([original_face_encoding], unknown_face_encoding, tolerance=0.6)
 
-    if final_confidence > 0.6:
+    if final_confidence > threshold:
         is_match = True
     else:
         is_match = False
@@ -129,7 +132,10 @@ def face_comparison(original, video_name):
         "is_match": is_match,
         "confidence": final_confidence
     }
+
     delete_files()
+
+    print(result)
     return jsonify(result)
 
 
@@ -147,6 +153,7 @@ def upload_image():
 
         original = request.files['original']
         unknown = request.files['unknown']
+        threshold = request.form['threshold']
 
         if not original.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
             print(original.filename)
@@ -168,7 +175,10 @@ def upload_image():
         unknown.save(os.path.join(app.config["VIDEO_FOLDER"], unknown_filename))
 
         if original and unknown:
-            return face_comparison(original, unknown_filename)
+            if threshold == '':
+                print("Threshold is blank. Use default 0.6")
+                return face_comparison(original, unknown_filename)
+            return face_comparison(original, unknown_filename, float(threshold))
 
 
 @app.route('/')

@@ -1,10 +1,23 @@
 <!doctype html>
-<title>Face Matching</title>
-<h1>Upload a picture and a video and see if it's same person!</h1>
-<form method="POST" enctype="multipart/form-data" action="/api/upload">
-    <p> Upload the first picture:  <input type="file" name="original"> </p>
+<html>
+    <head>
+        <title>Face Matching</title>
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}">
+    </head>
+<body>
 
-    <p> Upload a video to compare:
-    <input type="file" name="unknown"> </p>
-  <input type="submit" value="Compare">
-</form>
+    <h1>Upload a picture and a video and see if it's same person!</h1>
+    <form method="POST" enctype="multipart/form-data" action="/api/upload">
+        <p> Upload the first picture:  <input type="file" name="original"> </p>
+
+        <p> Upload a video to compare:
+        <input type="file" name="unknown"> </p>
+
+        <p> You can Specify the threshold if you wish to (from 0.0 to 1.0). By default is 0.6 </p>
+        <input type="number" name="threshold"
+               min="0" max="1" step="0.01" placeholder="0.6"> <br> <br>
+      <input type="submit" value="Compare">
+    </form>
+</body>
+
+</html>
