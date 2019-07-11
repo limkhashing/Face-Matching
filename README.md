@@ -31,7 +31,7 @@ pip install -r requirements.txt
 You can try the web app that hosted [here](https://cardzone-face-matching.herokuapp.com/)
 
 
-## Issues
+## Issues when deploying on Heroku / VM / Dockers
 There are some issues when trying to deploy this app on the web. Please see the link below for the fix.  
 Some of the issues are
 * dlib not able to install.
