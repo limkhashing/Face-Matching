@@ -14,7 +14,7 @@ from werkzeug.utils import secure_filename
 
 # You can change this to any folder on your system
 ALLOWED__PICTURE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
-ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm')
+ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm', 'mov')
 
 app = Flask(__name__)
 
@@ -157,13 +157,13 @@ def upload_image():
 
         if not original.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
             print(original.filename)
-            print("Picture extension is not correct")
-            return redirect(request.url_root)
+            return "Picture extension is not correct"
+            # return redirect(request.url_root)
 
         if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
             print(unknown.filename)
-            print("Video extension is not correct")
-            return redirect(request.url_root)
+            return "Video extension is not correct"
+            # return redirect(request.url_root)
 
         # Check if folder existed or not. If not then create it
         if not os.path.exists(app.config["VIDEO_FOLDER"]):
