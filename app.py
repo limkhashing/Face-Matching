@@ -9,7 +9,7 @@ import os
 import cv2
 import face_recognition
 
-from flask import Flask, jsonify, request, redirect, render_template, send_from_directory, url_for
+from flask import Flask, jsonify, request, redirect, render_template, send_from_directory, url_for, flash
 from werkzeug.utils import secure_filename
 
 # You can change this to any folder on your system
@@ -53,7 +53,7 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.6):
 
 
 def extract_frames_from_video(video_name):
-    count = 1
+    count = 0
     video = os.path.join(app.config["VIDEO_FOLDER"], video_name)
     vidcap = cv2.VideoCapture(video)
     while True:
@@ -63,7 +63,7 @@ def extract_frames_from_video(video_name):
         if not success:
             break
         print('Writing a new frame: ', success)
-        cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame%d.jpg") % count, image) # save frame as JPEG file
+        cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, image) # save frame as JPEG file
         count = count + 1
 
 
@@ -91,9 +91,9 @@ def face_comparison(original, video_name, threshold=0.6):
         face_found_in_image = True
 
         # loop through frames folder
-        print("Face matching start")
+        print("===== Face matching start =====")
         print("Found face in image")
-        for frame in os.listdir(app.config["FRAMES_FOLDER"]):
+        for i, frame in enumerate(os.listdir(app.config["FRAMES_FOLDER"])):
             absoulute_video_frame_directory_file = os.path.join(app.config["FRAMES_FOLDER"], frame)
 
             unknown_image = face_recognition.load_image_file(absoulute_video_frame_directory_file)
@@ -104,14 +104,16 @@ def face_comparison(original, video_name, threshold=0.6):
 
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_found_in_video = True
-                print("Found face in video")
+                print("Found face in frame " + str(i) + ". Proceed to compare")
 
                 # get the confidence rate
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
-                confidence = face_distance_to_conf(face_distances)
+                confidence = face_distance_to_conf(face_distances, threshold)
                 final_confidence = final_confidence + confidence[0]
+
                 count = count + 1
 
+    print("===== Face comparison finished =====")
     # average the final confidence value
     final_confidence = final_confidence / count
 
@@ -127,6 +129,7 @@ def face_comparison(original, video_name, threshold=0.6):
 
     # Return the result as json
     result = {
+        "status_code": 200,
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
@@ -139,17 +142,32 @@ def face_comparison(original, video_name, threshold=0.6):
     return jsonify(result)
 
 
+def get_error_result(type, is_no_files):
+    if is_no_files:
+        result = {
+                "status_code": 400,
+                "error": "No " + type + " Found"
+            }
+    else:
+        result = {
+            "status_code": 400,
+            "error": type + " extension is not correct"
+        }
+    return jsonify(result)
+
+
 @app.route('/api/upload', methods=['GET', 'POST'])
 def upload_image():
     # Check if a valid image and video file was uploaded
     if request.method == 'POST':
-        if 'original' not in request.files:
-            print("no files in original")
-            return redirect(request.url_root)
 
-        if 'unknown' not in request.files:
+        if request.files['original'].filename == '':
+            print("no files in original")
+            return get_error_result("Image", True)
+
+        if request.files['unknown'].filename == '':
             print("no files in unknown")
-            return redirect(request.url_root)
+            return get_error_result("Video", True)
 
         original = request.files['original']
         unknown = request.files['unknown']
@@ -157,13 +175,11 @@ def upload_image():
 
         if not original.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
             print(original.filename)
-            return "Picture extension is not correct"
-            # return redirect(request.url_root)
+            return get_error_result("Image", False)
 
         if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
             print(unknown.filename)
-            return "Video extension is not correct"
-            # return redirect(request.url_root)
+            return get_error_result("Video", False)
 
         # Check if folder existed or not. If not then create it
         if not os.path.exists(app.config["VIDEO_FOLDER"]):
