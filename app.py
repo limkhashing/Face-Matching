@@ -54,17 +54,29 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.6):
 
 def extract_frames_from_video(video_name):
     count = 0
+
     video = os.path.join(app.config["VIDEO_FOLDER"], video_name)
     vidcap = cv2.VideoCapture(video)
-    while True:
-        # 1000 for 1 seconds
-        vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))
-        success, image = vidcap.read()
-        if not success:
+    frame_rate = vidcap.get(5)  # frame rate
+
+    while (vidcap.isOpened()):
+        frameId = vidcap.get(1)  # current frame number
+        ret, frame = vidcap.read()
+        if (ret != True):
             break
-        print('Writing a new frame: ', success)
-        cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, image) # save frame as JPEG file
-        count = count + 1
+        if (frameId % math.floor(frame_rate) == 0):
+            print('Writing a new frame...')
+
+            cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, frame)  # save frame as JPEG file
+
+            image = cv2.imread(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count)
+            image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+            cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, image)  # save frame as JPEG file
+
+            count = count + 1
+
+    vidcap.release()
 
 
 def face_comparison(original, video_name, threshold=0.6):
@@ -113,9 +125,13 @@ def face_comparison(original, video_name, threshold=0.6):
 
                 count = count + 1
 
-    print("===== Face comparison finished =====")
     # average the final confidence value
-    final_confidence = final_confidence / count
+    if count is not 0:
+        final_confidence = final_confidence / count
+    else:
+        print("Face not found in video")
+
+    print("===== Face comparison finished =====")
 
     # See if the first face in the uploaded image matches the known face
     # provide tolerance level to specify how strict it is. By default is 0.6
