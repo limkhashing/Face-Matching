@@ -4,12 +4,11 @@
 # https://raw.githubusercontent.com/ageitgey/face_recognition/master/examples/web_service_example.py
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
 
-import math
 import os
 import cv2
 import face_recognition
-
-from flask import Flask, jsonify, request, redirect, render_template, send_from_directory, url_for, flash
+import math
+from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
 
 # You can change this to any folder on your system
@@ -20,7 +19,7 @@ app = Flask(__name__)
 
 # Constant variable for directory
 app.config["FRAMES_FOLDER"] = "./frames"
-app.config["VIDEO_FOLDER"] = "./video_upload"
+app.config["UPLOAD_FOLDER"] = "./upload"
 
 
 def delete_files():
@@ -32,8 +31,8 @@ def delete_files():
         except Exception as e:
             print(e)
 
-    for file in os.listdir(app.config["VIDEO_FOLDER"]):
-        file_path = os.path.join(app.config["VIDEO_FOLDER"] , file)
+    for file in os.listdir(app.config["UPLOAD_FOLDER"]):
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"] , file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
@@ -55,7 +54,7 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.6):
 def extract_frames_from_video(video_name):
     count = 0
 
-    video = os.path.join(app.config["VIDEO_FOLDER"], video_name)
+    video = os.path.join(app.config["UPLOAD_FOLDER"], video_name)
     vidcap = cv2.VideoCapture(video)
     frame_rate = vidcap.get(5)  # frame rate
 
@@ -198,19 +197,26 @@ def upload_image():
             return get_error_result("Video", False)
 
         # Check if folder existed or not. If not then create it
-        if not os.path.exists(app.config["VIDEO_FOLDER"]):
-            os.makedirs(app.config["VIDEO_FOLDER"])
+        if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+            os.makedirs(app.config["UPLOAD_FOLDER"])
         if not os.path.exists(app.config["FRAMES_FOLDER"]):
             os.makedirs(app.config["FRAMES_FOLDER"])
 
         unknown_filename = secure_filename(unknown.filename)
-        unknown.save(os.path.join(app.config["VIDEO_FOLDER"], unknown_filename))
+
+        unknown.save(os.path.join(app.config["UPLOAD_FOLDER"], unknown_filename))
+        original.save(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
 
         if original and unknown:
+
+            original_image = cv2.imread(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
+            resized_image = cv2.resize(original_image, None, fx=0.07, fy=0.07)
+            cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), resized_image)
+
             if threshold == '':
                 print("Threshold is blank. Use default 0.6")
-                return face_comparison(original, unknown_filename)
-            return face_comparison(original, unknown_filename, float(threshold))
+                return face_comparison(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), unknown_filename)
+            return face_comparison(resized_image, unknown_filename, float(threshold))
 
 
 @app.route('/')
