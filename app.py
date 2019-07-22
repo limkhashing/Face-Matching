@@ -58,18 +58,20 @@ def extract_frames_from_video(video_name):
     vidcap = cv2.VideoCapture(video)
     frame_rate = vidcap.get(5)  # frame rate
 
-    while (vidcap.isOpened()):
+    while vidcap.isOpened():
         frameId = vidcap.get(1)  # current frame number
         ret, frame = vidcap.read()
-        if (ret != True):
+        if ret != True:
             break
         if (frameId % math.floor(frame_rate) == 0):
-            print('Writing a new frame...')
+            print('Writing a new frame of video...')
 
             cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, frame)  # save frame as JPEG file
 
             image = cv2.imread(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count)
-            image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+            # TODO make sure the orientation of frame can see the face
+            # image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
             cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, image)  # save frame as JPEG file
 
@@ -85,6 +87,7 @@ def face_comparison(original, video_name, threshold=0.6):
     face_found_in_image = False
     face_found_in_video = False
     final_confidence = 0
+    status_code = 404
 
     # Load the uploaded image file
     original_image = face_recognition.load_image_file(original)
@@ -94,41 +97,45 @@ def face_comparison(original, video_name, threshold=0.6):
     # variable count to average out how many frames extracted
     count = 0
 
+    original_face_encoding = []
+
+    print("===== Face matching start =====")
     # if there is a face in original image
-    if(len(original_face_encodings) > 0):
+    if len(original_face_encodings) > 0:
 
         # since i know the image will always have 1 face, so only get the first face detected
         original_face_encoding = face_recognition.face_encodings(original_image)[0]
         face_found_in_image = True
-
-        # loop through frames folder
-        print("===== Face matching start =====")
         print("Found face in image")
-        for i, frame in enumerate(os.listdir(app.config["FRAMES_FOLDER"])):
-            absoulute_video_frame_directory_file = os.path.join(app.config["FRAMES_FOLDER"], frame)
 
-            unknown_image = face_recognition.load_image_file(absoulute_video_frame_directory_file)
-            unknown_face_encodings = face_recognition.face_encodings(unknown_image)
+    # loop through frames folder
+    for i, frame in enumerate(os.listdir(app.config["FRAMES_FOLDER"])):
+        absolute_video_frame_directory_file = os.path.join(app.config["FRAMES_FOLDER"], frame)
 
-            # if extracted unknown frames have face, we proceed to compare it against original
-            if len(unknown_face_encodings) > 0:
+        unknown_image = face_recognition.load_image_file(absolute_video_frame_directory_file)
+        unknown_face_encodings = face_recognition.face_encodings(unknown_image)
 
+        # if extracted unknown frames have face, we proceed to compare it against original
+        if len(unknown_face_encodings) > 0:
+            face_found_in_video = True
+            print("Found face in frame " + str(i))
+
+            # get the confidence rate
+            if face_found_in_image:
+                print("Proceed to compare face...")
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
-                face_found_in_video = True
-                print("Found face in frame " + str(i) + ". Proceed to compare")
-
-                # get the confidence rate
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
                 confidence = face_distance_to_conf(face_distances, threshold)
                 final_confidence = final_confidence + confidence[0]
-
                 count = count + 1
 
     # average the final confidence value
-    if count is not 0:
-        final_confidence = final_confidence / count
-    else:
-        print("Face not found in video")
+    if face_found_in_video and face_found_in_video:
+        if count is not 0:
+            status_code = 200
+            final_confidence = final_confidence / count
+        else:
+            print("Face not found in both video and image")
 
     print("===== Face comparison finished =====")
 
@@ -144,7 +151,7 @@ def face_comparison(original, video_name, threshold=0.6):
 
     # Return the result as json
     result = {
-        "status_code": 200,
+        "status_code": status_code,
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
@@ -209,14 +216,20 @@ def upload_image():
 
         if original and unknown:
 
-            original_image = cv2.imread(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
-            resized_image = cv2.resize(original_image, None, fx=0.07, fy=0.07)
-            cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), resized_image)
+            # TODO Resize the image and scale it down
+            image_size = os.stat(os.path.join(app.config["UPLOAD_FOLDER"], original.filename)).st_size
+            print("Image Size: ", image_size)
+            if image_size > 500000:
+                print("Resize the image")
+                original_image = cv2.imread(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
+                resized_image = cv2.resize(original_image, None, fx=0.07, fy=0.07)
+                cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), resized_image)
 
             if threshold == '':
                 print("Threshold is blank. Use default 0.6")
                 return face_comparison(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), unknown_filename)
-            return face_comparison(resized_image, unknown_filename, float(threshold))
+            print("Threshold is specified. Use " + threshold)
+            return face_comparison(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), unknown_filename, float(threshold))
 
 
 @app.route('/')
