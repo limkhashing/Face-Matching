@@ -7,6 +7,7 @@
 import os
 import cv2
 import face_recognition
+import ffmpeg
 import math
 from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
@@ -24,7 +25,7 @@ app.config["UPLOAD_FOLDER"] = "./upload"
 
 def delete_files():
     for file in os.listdir(app.config["FRAMES_FOLDER"]):
-        file_path = os.path.join(app.config["FRAMES_FOLDER"] , file)
+        file_path = os.path.join(app.config["FRAMES_FOLDER"], file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
@@ -32,7 +33,7 @@ def delete_files():
             print(e)
 
     for file in os.listdir(app.config["UPLOAD_FOLDER"]):
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"] , file)
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
@@ -42,42 +43,70 @@ def delete_files():
 
 def face_distance_to_conf(face_distance, face_match_threshold=0.6):
     if face_distance > face_match_threshold:
-        range = (1.0 - face_match_threshold)
-        linear_val = (1.0 - face_distance) / (range * 2.0)
+        range_distance = (1.0 - face_match_threshold)
+        linear_val = (1.0 - face_distance) / (range_distance * 2.0)
         return linear_val
     else:
-        range = face_match_threshold
-        linear_val = 1.0 - (face_distance / (range * 2.0))
+        range_distance = face_match_threshold
+        linear_val = 1.0 - (face_distance / (range_distance * 2.0))
         return linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))
+
+
+def check_rotation(path_video_file):
+    # Start checking orientation of video received
+    print("Checking orientation of video received")
+
+    # this returns meta-data of the video file in form of a dictionary
+    meta_dict = ffmpeg.probe(path_video_file)
+
+    # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key
+    # we are looking for
+    rotateCode = None
+    rotate_angle = 'NO_ROTATE'
+    if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
+        rotateCode = cv2.ROTATE_90_CLOCKWISE
+        rotate_angle = 'ROTATE_90_CLOCKWISE'
+    elif int(meta_dict['streams'][0]['tags']['rotate']) == 180:
+        rotateCode = cv2.ROTATE_180
+        rotate_angle = 'ROTATE_180'
+    elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
+        rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
+        rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
+
+    print("Rotated to = ", rotate_angle)
+    return rotateCode
+
+
+def correct_rotation(frame, rotateCode):
+    return cv2.rotate(frame, rotateCode)
 
 
 def extract_frames_from_video(video_name):
     count = 0
+    video_path = os.path.join(app.config["UPLOAD_FOLDER"], video_name)
 
-    video = os.path.join(app.config["UPLOAD_FOLDER"], video_name)
-    vidcap = cv2.VideoCapture(video)
-    frame_rate = vidcap.get(5)  # frame rate
+    # check if video requires rotation
+    rotate_code = check_rotation(video_path)
 
-    while vidcap.isOpened():
-        frameId = vidcap.get(1)  # current frame number
-        ret, frame = vidcap.read()
-        if ret != True:
+    cap = cv2.VideoCapture(video_path)
+    frame_rate = cap.get(5)  # frame rate
+
+    while cap.isOpened():
+        frame_id = cap.get(1)  # current frame number
+        ret, frame = cap.read()
+        if ret == True:
+
+            if rotate_code is not None:
+                frame = correct_rotation(frame, rotate_code)
+
+            if frame_id % math.floor(frame_rate) == 0:
+                print('Writing a new %d frame of video...' % count)
+                cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
+                count = count + 1
+        else:
             break
-        if (frameId % math.floor(frame_rate) == 0):
-            print('Writing a new frame of video...')
 
-            cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, frame)  # save frame as JPEG file
-
-            image = cv2.imread(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count)
-
-            # TODO make sure the orientation of frame can see the face
-            # image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
-
-            cv2.imwrite(os.path.join(app.config["FRAMES_FOLDER"], "frame_%d.jpg") % count, image)  # save frame as JPEG file
-
-            count = count + 1
-
-    vidcap.release()
+    cap.release()
 
 
 def face_comparison(original, video_name, threshold=0.6):
@@ -164,16 +193,16 @@ def face_comparison(original, video_name, threshold=0.6):
     return jsonify(result)
 
 
-def get_error_result(type, is_no_files):
+def get_error_result(source_type, is_no_files):
     if is_no_files:
         result = {
                 "status_code": 400,
-                "error": "No " + type + " Found"
+                "error": "No " + source_type + " Found"
             }
     else:
         result = {
             "status_code": 400,
-            "error": type + " extension is not correct"
+            "error": source_type + " extension is not correct"
         }
     return jsonify(result)
 
