@@ -85,8 +85,9 @@ def extract_frames_from_video(video_name):
     count = 0
     video_path = os.path.join(app.config["UPLOAD_FOLDER"], video_name)
 
+    # TODO uncomment this to allow rotate
     # check if video requires rotation
-    rotate_code = check_rotation(video_path)
+    # rotate_code = check_rotation(video_path)
 
     cap = cv2.VideoCapture(video_path)
     frame_rate = cap.get(5)  # frame rate
@@ -96,8 +97,9 @@ def extract_frames_from_video(video_name):
         ret, frame = cap.read()
         if ret == True:
 
-            if rotate_code is not None:
-                frame = correct_rotation(frame, rotate_code)
+            # TODO uncomment this to allow rotate
+            # if rotate_code is not None:
+            #     frame = correct_rotation(frame, rotate_code)
 
             if frame_id % math.floor(frame_rate) == 0:
                 print('Writing a new %d frame of video...' % count)
