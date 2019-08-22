@@ -25,6 +25,10 @@ q = Queue(connection=conn)
 app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
 
+def test_compare(unknown_image):
+    unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
+    return unknown_face_encoding
+
 
 def get_status(job):
     status = {
@@ -175,7 +179,7 @@ def face_comparison(original, video_name, threshold=0.6):
             if face_found_in_image:
                 print("Proceed to compare face...")
 
-                unknown_face_encoding = q.enqueue(face_recognition.face_encodings(unknown_image)[0])
+                unknown_face_encoding = q.enqueue(test_compare, unknown_image)
                 # unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
 
