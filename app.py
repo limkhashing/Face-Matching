@@ -64,10 +64,9 @@ def check_rotation(path_video_file):
     rotateCode = None
     rotate_angle = 'NO_ROTATE'
 
-    # check rotate key exist in meta_dict
-    if 'rotate' not in meta_dict:
-        print("No rotation metadata. Skip check rotation")
-    else:
+    # try rotate the image by finding rotate key meta_dict
+    # if no, prompt message
+    try:
         if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
             rotateCode = cv2.ROTATE_90_CLOCKWISE
             rotate_angle = 'ROTATE_90_CLOCKWISE'
@@ -77,6 +76,8 @@ def check_rotation(path_video_file):
         elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
             rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
             rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
+    except KeyError:
+        print("No rotation metadata. Skip check rotation")
 
     print("Rotated to = ", rotate_angle)
     return rotateCode
@@ -196,7 +197,7 @@ def face_comparison(original, video_name, threshold=0.6):
         "confidence": final_confidence
     }
 
-    delete_files()
+    # delete_files()
 
     print(result)
     return jsonify(result)
