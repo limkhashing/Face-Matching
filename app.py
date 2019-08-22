@@ -11,16 +11,29 @@ import ffmpeg
 import math
 from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
+from rq import Queue
+from worker import conn
 
 # You can change this to any folder on your system
 ALLOWED__PICTURE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
 ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm', 'mov')
 
 app = Flask(__name__)
+q = Queue(connection=conn)
 
 # Constant variable for directory
 app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
+
+
+def get_status(job):
+    status = {
+        'id': job.id,
+        'result': job.result,
+        'status': 'failed' if job.is_failed else 'pending' if job.result == None else 'completed'
+    }
+    status.update(job.meta)
+    return status
 
 
 def delete_files():
@@ -152,16 +165,18 @@ def face_comparison(original, video_name, threshold=0.6):
         unknown_image = face_recognition.load_image_file(absolute_video_frame_directory_file)
         unknown_face_encodings = face_recognition.face_encodings(unknown_image)
 
-        # if extracted unknown frames have face, we proceed to compare it against original
+        # if extracted unknown frames have face,
         if len(unknown_face_encodings) > 0:
             face_found_in_video = True
             print("Found face in frame " + str(i))
 
-            # get the confidence rate
+            # if original image have face detected,
+            # we proceed to compare it against unknown image
             if face_found_in_image:
                 print("Proceed to compare face...")
 
-                unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
+                unknown_face_encoding = q.enqueue(face_recognition.face_encodings(unknown_image)[0])
+                # unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
 
                 confidence = face_distance_to_conf(face_distances, threshold)
