@@ -23,16 +23,6 @@ app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
 
 
-def get_status(job):
-    status = {
-        'id': job.id,
-        'result': job.result,
-        'status': 'failed' if job.is_failed else 'pending' if job.result == None else 'completed'
-    }
-    status.update(job.meta)
-    return status
-
-
 def delete_files():
     for file in os.listdir(app.config["FRAMES_FOLDER"]):
         file_path = os.path.join(app.config["FRAMES_FOLDER"], file)
@@ -118,8 +108,10 @@ def extract_frames_from_video(video_name):
                 frame = correct_rotation(frame, rotate_code)
 
             if frame_id % math.floor(frame_rate) == 0:
-                print('Writing a new %d frame of video...' % count)
-                cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
+                print('Resize and Extract new %d frame of video...' % count)
+                resized_frame = cv2.resize(frame, None, fx=0.07, fy=0.07)
+                cv2.imwrite("./frames/frame_%d.jpg" % count, resized_frame)
+
                 count = count + 1
         else:
             break
