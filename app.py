@@ -87,7 +87,7 @@ def extract_frames_from_video(video_name):
 
     # TODO uncomment this to allow rotate
     # check if video requires rotation
-    # rotate_code = check_rotation(video_path)
+    rotate_code = check_rotation(video_path)
 
     cap = cv2.VideoCapture(video_path)
     frame_rate = cap.get(5)  # frame rate
@@ -98,8 +98,8 @@ def extract_frames_from_video(video_name):
         if ret == True:
 
             # TODO uncomment this to allow rotate
-            # if rotate_code is not None:
-            #     frame = correct_rotation(frame, rotate_code)
+            if rotate_code is not None:
+                frame = correct_rotation(frame, rotate_code)
 
             if frame_id % math.floor(frame_rate) == 0:
                 print('Writing a new %d frame of video...' % count)
@@ -165,8 +165,8 @@ def face_comparison(original, video_name, threshold=0.6):
         if count is not 0:
             status_code = 200
             final_confidence = final_confidence / count
-        else:
-            print("Face not found in both video and image")
+    else:
+        print("Face not found in either video and image")
 
     print("===== Face comparison finished =====")
 
