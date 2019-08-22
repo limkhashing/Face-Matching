@@ -11,23 +11,16 @@ import ffmpeg
 import math
 from flask import Flask, jsonify, request, render_template
 from werkzeug.utils import secure_filename
-from rq import Queue
-from worker import conn
 
 # You can change this to any folder on your system
 ALLOWED__PICTURE_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
 ALLOWED_VIDEO_EXTENSIONS = ('mp4', 'avi', 'webm', 'mov')
 
 app = Flask(__name__)
-q = Queue(connection=conn)
 
 # Constant variable for directory
 app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
-
-def test_compare(unknown_image):
-    unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
-    return unknown_face_encoding
 
 
 def get_status(job):
@@ -179,8 +172,7 @@ def face_comparison(original, video_name, threshold=0.6):
             if face_found_in_image:
                 print("Proceed to compare face...")
 
-                unknown_face_encoding = q.enqueue(test_compare, unknown_image)
-                # unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
+                unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
 
                 confidence = face_distance_to_conf(face_distances, threshold)
