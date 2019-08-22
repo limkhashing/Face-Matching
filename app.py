@@ -63,15 +63,20 @@ def check_rotation(path_video_file):
     # we are looking for
     rotateCode = None
     rotate_angle = 'NO_ROTATE'
-    if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
-        rotateCode = cv2.ROTATE_90_CLOCKWISE
-        rotate_angle = 'ROTATE_90_CLOCKWISE'
-    elif int(meta_dict['streams'][0]['tags']['rotate']) == 180:
-        rotateCode = cv2.ROTATE_180
-        rotate_angle = 'ROTATE_180'
-    elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
-        rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
-        rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
+
+    # check rotate key exist in meta_dict
+    if 'rotate' not in meta_dict:
+        print("No rotation metadata. Skip check rotation")
+    else:
+        if int(meta_dict['streams'][0]['tags']['rotate']) == 90:
+            rotateCode = cv2.ROTATE_90_CLOCKWISE
+            rotate_angle = 'ROTATE_90_CLOCKWISE'
+        elif int(meta_dict['streams'][0]['tags']['rotate']) == 180:
+            rotateCode = cv2.ROTATE_180
+            rotate_angle = 'ROTATE_180'
+        elif int(meta_dict['streams'][0]['tags']['rotate']) == 270:
+            rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
+            rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
 
     print("Rotated to = ", rotate_angle)
     return rotateCode
@@ -154,8 +159,10 @@ def face_comparison(original, video_name, threshold=0.6):
             # get the confidence rate
             if face_found_in_image:
                 print("Proceed to compare face...")
+
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_distances = face_recognition.face_distance([original_face_encoding], unknown_face_encoding)
+
                 confidence = face_distance_to_conf(face_distances, threshold)
                 final_confidence = final_confidence + confidence[0]
                 count = count + 1
