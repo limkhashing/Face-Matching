@@ -4,6 +4,11 @@
 # https://raw.githubusercontent.com/ageitgey/face_recognition/master/examples/web_service_example.py
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
 
+# TODO Refactor
+# Change Original to Known
+# Split functions to different files
+# use constant variable as file path instead app.config
+
 import os
 import cv2
 import face_recognition
@@ -21,6 +26,9 @@ app = Flask(__name__)
 # Constant variable for directory
 app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
+
+frame_size_threshold = 400000
+image_size_threshold = 500000
 
 
 def delete_files():
@@ -91,7 +99,6 @@ def extract_frames_from_video(video_name):
     count = 0
     video_path = os.path.join(app.config["UPLOAD_FOLDER"], video_name)
 
-    # TODO uncomment this to allow rotate
     # check if video requires rotation
     rotate_code = check_rotation(video_path)
 
@@ -103,14 +110,22 @@ def extract_frames_from_video(video_name):
         ret, frame = cap.read()
         if ret == True:
 
-            # TODO uncomment this to allow rotate
+            # check rotate_code.
+            # If got code, rotate the frame back to original orientation
             if rotate_code is not None:
                 frame = correct_rotation(frame, rotate_code)
 
             if frame_id % math.floor(frame_rate) == 0:
-                print('Resize and Extract new %d frame of video...' % count)
-                resized_frame = cv2.resize(frame, None, fx=0.07, fy=0.07)
-                cv2.imwrite("./frames/frame_%d.jpg" % count, resized_frame)
+                print('Extract the new %d frame of video...' % count)
+                cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
+
+                # check extracted frame size is large than
+                frame_size = os.stat("./frames/frame_%d.jpg" % count).st_size
+
+                if frame_size > frame_size_threshold:
+                    print('Resize the new %d frame of video...' % count)
+                    frame = cv2.resize(frame, None, fx=0.07, fy=0.07)
+                    cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
 
                 count = count + 1
         else:
@@ -224,7 +239,6 @@ def get_error_result(source_type, is_no_files):
 def upload_image():
     # Check if a valid image and video file was uploaded
     if request.method == 'POST':
-        print(request.files)
 
         if request.files['original'].filename == '':
             print("no files in original")
@@ -259,11 +273,12 @@ def upload_image():
 
         if original and unknown:
 
-            # TODO Resize the image and scale it down
-            image_size = os.stat(os.path.join(app.config["UPLOAD_FOLDER"], original.filename)).st_size
-            print("Image Size: ", image_size)
-            if image_size > 500000:
-                print("Resize the image")
+            # Resize the original image and scale it down
+            known_image_size = os.stat(os.path.join(app.config["UPLOAD_FOLDER"], original.filename)).st_size
+            print("Image Size: ", known_image_size)
+
+            if known_image_size > image_size_threshold:
+                print("Resize the known image")
                 original_image = cv2.imread(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
                 resized_image = cv2.resize(original_image, None, fx=0.07, fy=0.07)
                 cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), resized_image)
