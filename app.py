@@ -27,7 +27,7 @@ app = Flask(__name__)
 app.config["FRAMES_FOLDER"] = "./frames"
 app.config["UPLOAD_FOLDER"] = "./upload"
 
-frame_size_threshold = 400000
+frame_size_threshold = 200000
 image_size_threshold = 500000
 
 
@@ -123,8 +123,8 @@ def extract_frames_from_video(video_name):
                 frame_size = os.stat("./frames/frame_%d.jpg" % count).st_size
 
                 if frame_size > frame_size_threshold:
-                    print('Resize the new %d frame of video...' % count)
-                    frame = cv2.resize(frame, None, fx=0.07, fy=0.07)
+                    print('Resizing the new %d frame of video...' % count)
+                    frame = cv2.resize(frame, None, fx=0.1, fy=0.1, interpolation = cv2.INTER_AREA)
                     cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
 
                 count = count + 1
@@ -278,9 +278,9 @@ def upload_image():
             print("Image Size: ", known_image_size)
 
             if known_image_size > image_size_threshold:
-                print("Resize the known image")
+                print("Resizing the known image")
                 original_image = cv2.imread(os.path.join(app.config["UPLOAD_FOLDER"], original.filename))
-                resized_image = cv2.resize(original_image, None, fx=0.07, fy=0.07)
+                resized_image = cv2.resize(original_image, None, fx=0.1, fy=0.1)
                 cv2.imwrite(os.path.join(app.config["UPLOAD_FOLDER"], original.filename), resized_image)
 
             if threshold == '':
