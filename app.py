@@ -200,7 +200,7 @@ def face_comparison(original, video_name, threshold=0.6):
         "confidence": final_confidence
     }
 
-    # delete_files()
+    delete_files()
 
     print(result)
     return jsonify(result)
@@ -224,6 +224,7 @@ def get_error_result(source_type, is_no_files):
 def upload_image():
     # Check if a valid image and video file was uploaded
     if request.method == 'POST':
+        print(request.files)
 
         if request.files['original'].filename == '':
             print("no files in original")
