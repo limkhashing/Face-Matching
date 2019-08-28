@@ -235,7 +235,7 @@ def get_error_result(source_type, is_no_files):
     return jsonify(result)
 
 
-@app.route('/api/upload', methods=['GET', 'POST'])
+@app.route('/api/upload', methods=['POST'])
 def upload_image():
     # Check if a valid image and video file was uploaded
     if request.method == 'POST':
@@ -296,4 +296,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="192.168.0.161", debug=True)
