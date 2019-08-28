@@ -9,7 +9,7 @@
 * [Face_Recognition python package](https://github.com/ageitgey/face_recognition) 
 * Flask
 * Gunicorn
-* OpenCV
+* OpenCV and FFMPEG
 
 ## Installing on Unix or Windows
 To run this project, install it locally using pip on a virtual environment
