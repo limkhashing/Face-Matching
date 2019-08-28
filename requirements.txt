@@ -13,6 +13,4 @@ opencv-python-headless
 Pillow
 Werkzeug
 ffmpeg-python
-redis
-rq
 newrelic
