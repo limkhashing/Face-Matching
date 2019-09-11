@@ -4,7 +4,6 @@
 ![Side Project](https://img.shields.io/badge/Side-Project-yellowgreen.svg)
 > This is a simple Python/Flask application that intended to compare face that found in an image and short video. It will return a JSON whether face found in image and video, a confidence percentage and whether is matched or not
 
-
 ## Tech/Framework used
 * [Face_Recognition python package](https://github.com/ageitgey/face_recognition) 
 * Flask
@@ -25,7 +24,9 @@ pip install -r requirements.txt
    * Extract frame per second from video uploaded
      * Check the frame whether is rotated. If is rotated, rotate it back to portrait
    * Check the size of frame extracted. If is above certain threshold, then it will be compress
-   * Start comparing the picture and frames extracted. Confidence will be divided by how many frame counts
+   * Loop through and comparing the picture and frames extracted. Confidence will be divided by how many frame counts
+   
+![flowchart](https://raw.githubusercontent.com/limkhashing/Face-Comparison/master/static/Face%20Matching%20Flowchart.jpg)
 
 ## Deployment
 * Deployment was done by using [Heroku](https://www.heroku.com/)  
