@@ -9,7 +9,7 @@
 * [Face_Recognition python package](https://github.com/ageitgey/face_recognition) 
 * Flask
 * Gunicorn
-* OpenCV
+* OpenCV and FFMPEG
 
 ## Installing on Unix or Windows
 To run this project, install it locally using pip on a virtual environment
@@ -20,7 +20,12 @@ pip install -r requirements.txt
 ## How does it work
 1. Upload a picture of the person you want to compare
 2. Upload a short video (mp4, avi, webm) 
-3. Click compare and the app will compare the face found in picture and video. 
+3. Click compare and it will compare the face found in picture and video
+   * Check the size of picture uploaded. If is above certain threshold, then it will be compress
+   * Extract frame per second from video uploaded
+     * Check the frame whether is rotated. If is rotated, rotate it back to portrait
+   * Check the size of frame extracted. If is above certain threshold, then it will be compress
+   * Start comparing the picture and frames extracted. Confidence will be divided by how many frame counts
 
 ## Deployment
 * Deployment was done by using [Heroku](https://www.heroku.com/)  
