@@ -27,15 +27,13 @@ def compare_face(known, video_name, threshold=0.6):
     face_found_in_image = False
     face_found_in_video = False
     final_confidence = 0
+    confidences_list = []
     status_code = 404
 
     # Load the uploaded image file
     known_image = face_recognition.load_image_file(known)
     # face_encodings without [] is to get face encodings for any faces in the uploaded image
     known_face_encodings = face_recognition.face_encodings(known_image)
-
-    # variable count to average out how many frames extracted
-    count = 0
 
     known_face_encoding = []
 
@@ -69,14 +67,12 @@ def compare_face(known, video_name, threshold=0.6):
                 face_distances = face_recognition.face_distance([known_face_encoding], unknown_face_encoding)
 
                 confidence = face_distance_to_conf(face_distances, threshold)
-                final_confidence = final_confidence + confidence[0]
-                count = count + 1
+                confidences_list.append(confidence[0])
 
     # average the final confidence value
     if face_found_in_video and face_found_in_video:
-        if count is not 0:
-            status_code = 200
-            final_confidence = final_confidence / count
+        status_code = 200
+        final_confidence = sum(confidences_list) / float(len(confidences_list))
     else:
         print("Face not found in either video and image")
 
