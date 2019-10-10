@@ -65,7 +65,6 @@ def compare_face(known, video_name, threshold=0.6):
 
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 face_distances = face_recognition.face_distance([known_face_encoding], unknown_face_encoding)
-
                 confidence = face_distance_to_conf(face_distances, threshold)
                 confidences_list.append(confidence[0])
 
