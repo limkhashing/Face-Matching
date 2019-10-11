@@ -1,20 +1,5 @@
-import os
-from constants import frames_folder, upload_folder
+import shutil
 
-
-def delete_files():
-    for file in os.listdir(frames_folder):
-        file_path = os.path.join(frames_folder, file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
-
-    for file in os.listdir(upload_folder):
-        file_path = os.path.join(upload_folder, file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+def delete_files(request_upload_folder_path, request_frames_folder_path):
+    shutil.rmtree(request_upload_folder_path, ignore_errors=True)
+    shutil.rmtree(request_frames_folder_path, ignore_errors=True)

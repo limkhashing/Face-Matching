@@ -3,7 +3,7 @@ import math
 import cv2
 import ffmpeg
 
-from constants import upload_folder, frame_size_threshold
+from constants import frame_size_threshold
 
 
 def check_rotation(path_video_file):
@@ -43,9 +43,8 @@ def correct_rotation(frame, rotateCode):
     return cv2.rotate(frame, rotateCode)
 
 
-def extract_frames_from_video(video_name):
+def extract_frames_from_video(video_path, request_frames_folder_path):
     count = 0
-    video_path = os.path.join(upload_folder, video_name)
 
     # check if video requires rotation
     rotate_code = check_rotation(video_path)
@@ -65,15 +64,15 @@ def extract_frames_from_video(video_name):
 
             if frame_id % math.floor(frame_rate) == 0:
                 print('Extract the new %d frame of video...' % count)
-                cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
+                cv2.imwrite(request_frames_folder_path + '/frame_%d.jpg' % count, frame)
 
                 # check extracted frame size is large than
-                frame_size = os.stat("./frames/frame_%d.jpg" % count).st_size
+                frame_size = os.stat(request_frames_folder_path + '/frame_%d.jpg' % count).st_size
 
                 if frame_size > frame_size_threshold:
                     print('Resizing the new %d frame of video...' % count)
                     frame = cv2.resize(frame, None, fx=0.1, fy=0.1, interpolation = cv2.INTER_AREA)
-                    cv2.imwrite("./frames/frame_%d.jpg" % count, frame)
+                    cv2.imwrite(request_frames_folder_path + '/frame_%d.jpg' % count, frame)
 
                 count = count + 1
         else:
