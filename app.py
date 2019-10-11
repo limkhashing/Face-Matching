@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from request_id import RequestIdMiddleware
 from image_processing import compare_face
 from constants import *
-from lib.werkzeug.serving import make_server
+from werkzeug.serving import make_server
 
 app = Flask(__name__)
 
