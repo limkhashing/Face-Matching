@@ -8,7 +8,6 @@ import os
 import cv2
 import request_id
 from flask import Flask, jsonify, request, render_template
-from werkzeug.utils import secure_filename
 from request_id import RequestIdMiddleware
 from image_processing import compare_face
 from constants import *
@@ -36,7 +35,7 @@ def get_error_result(source_type, is_no_files):
     return jsonify(result)
 
 
-def createDirectories():
+def create_directories():
     # Check if upload and frames folder existed or not.
     # If not then create it
     if not os.path.exists(upload_folder):
@@ -48,7 +47,7 @@ def createDirectories():
     face_matching_request_id = request_id.get_request_id(request)
     print("Request ID:", face_matching_request_id)
 
-    # create a subdirectory for frames and upload folder
+    # create a subdirectory with unique request id inside frames and upload folder
     request_upload_folder_path = os.path.join(upload_folder, face_matching_request_id)
     request_frames_folder_path = os.path.join(frames_folder, face_matching_request_id)
     os.makedirs(request_frames_folder_path)
@@ -59,64 +58,59 @@ def createDirectories():
 
 @app.route('/api/upload', methods=['POST'])
 def upload_image_video():
+
+    # Check whether files is uploaded or not
+    if request.files['known'].filename == '':
+        print("no files in known")
+        return get_error_result("Image", True)
+    if request.files['unknown'].filename == '':
+        print("no files in unknown")
+        return get_error_result("Video", True)
+
     # Check if a valid image and video file was uploaded
-    if request.method == 'POST':
+    known = request.files['known']
+    unknown = request.files['unknown']
+    tolerance = request.form['tolerance']
+    threshold = request.form['threshold']
+    if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
+        print(known.filename)
+        return get_error_result("Image", False)
+    if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
+        print(unknown.filename)
+        return get_error_result("Video", False)
 
-        if request.files['known'].filename == '':
-            print("no files in known")
-            return get_error_result("Image", True)
+    # unknown_filename = secure_filename(unknown.filename)
+    request_upload_folder_path, request_frames_folder_path = create_directories()
 
-        if request.files['unknown'].filename == '':
-            print("no files in unknown")
-            return get_error_result("Video", True)
+    # create absolutely paths for the uploaded files
+    unknown_filename_path = os.path.join(request_upload_folder_path, unknown.filename)
+    known_filename_path = os.path.join(request_upload_folder_path, known.filename)
 
-        known = request.files['known']
-        unknown = request.files['unknown']
-        threshold = request.form['threshold']
+    # Save the uploaded files to directory
+    # Example: upload/request-id/image.jpg
+    unknown.save(unknown_filename_path)
+    known.save(known_filename_path)
 
-        if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
-            print(known.filename)
-            return get_error_result("Image", False)
+    video_path = os.path.join(request_upload_folder_path, unknown.filename)
 
-        if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
-            print(unknown.filename)
-            return get_error_result("Video", False)
+    if known and unknown:
 
-        request_upload_folder_path, request_frames_folder_path = createDirectories()
-        unknown_filename = secure_filename(unknown.filename)
+        # Resize the known image and scale it down
+        known_image_size = os.stat(known_filename_path).st_size
+        print("Image Size: ", known_image_size)
 
-        unknown_filename_path = os.path.join(request_upload_folder_path, unknown_filename)
-        known_filename_path = os.path.join(request_upload_folder_path, known.filename)
+        if known_image_size > image_size_threshold:
+            print("Resizing the known image as it was larger than ", image_size_threshold)
+            known_image = cv2.imread(known_filename_path)
+            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
+            cv2.imwrite(known_filename_path, resized_image)
 
-        unknown.save(unknown_filename_path)
-        known.save(known_filename_path)
-
-        if known and unknown:
-
-            # Resize the known image and scale it down
-            known_image_size = os.stat(known_filename_path).st_size
-            print("Image Size: ", known_image_size)
-
-            if known_image_size > image_size_threshold:
-                print("Resizing the known image")
-                known_image = cv2.imread(known_filename_path)
-                resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
-                cv2.imwrite(known_filename_path, resized_image)
-
-            video_path = os.path.join(request_upload_folder_path, unknown_filename)
-
-            if threshold == '':
-                print("Threshold is blank. Use default 0.6")
-                return compare_face(known_filename_path,
-                                    video_path,
-                                    request_upload_folder_path,
-                                    request_frames_folder_path)
-            print("Threshold is specified. Use " + threshold)
-            return compare_face(known_filename_path,
-                                video_path,
-                                request_upload_folder_path,
-                                request_frames_folder_path,
-                                float(threshold))
+        return compare_face(known_filename_path,
+                            video_path,
+                            request_upload_folder_path,
+                            request_frames_folder_path,
+                            tolerance=tolerance,
+                            threshold=threshold)
 
 
 @app.route('/')
