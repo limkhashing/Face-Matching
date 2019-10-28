@@ -34,7 +34,7 @@ pip install -r requirements.txt
 * Aptfile is used to install additional software packages that application requires
 * newrelic.ini is use for New Relic add-on for monitoring 
 
-You can try the web app that hosted [here](https://cardzone-face-matching.herokuapp.com/)
+You can try the web app that hosted [here](https://matching-face.herokuapp.com/)
 
 ## Issues when deploying on Heroku / VM / Dockers
 There are some issues when trying to deploy this app on the web. Please see the link below for the fix.  
