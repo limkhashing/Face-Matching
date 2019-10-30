@@ -1,4 +1,5 @@
 # Face-Comparison 
+[![Build Status](https://travis-ci.com/limkhashing/Face-Matching.svg?branch=master)](https://travis-ci.com/limkhashing/Face-Matching)
 ![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)
 ![Side Project](https://img.shields.io/badge/Side-Project-yellowgreen.svg)
 > This is a simple Python/Flask application that intended to compare face that found in an image and short video. It will return a JSON whether face found in image and video, a confidence percentage and whether is matched or not
