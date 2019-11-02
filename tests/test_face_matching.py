@@ -7,8 +7,8 @@ import ffmpeg
 from face_recognition import api
 from app import app
 
-test_data_path = './tests/test_data'
-test_frames_path = './tests/test_frames'
+test_data_path = os.path.join(os.path.dirname(__file__), 'test_data')
+test_frames_path = os.path.join(os.path.dirname(__file__), 'test_frames')
 image_size_threshold = 500000
 frame_size_threshold = 200000
 tolerance = 0.5
