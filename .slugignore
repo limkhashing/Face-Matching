@@ -20,8 +20,6 @@ travis.yml
 
 # real life test data
 /test_data_ic_driving
-/coverage
-/tests/test_data_ic_driving/
 
 # documents
 *.docx

@@ -108,6 +108,4 @@ venv.bak/
 *.docx
 
 # real life test data
-/test_data_ic_driving
-/coverage
 /tests/test_data_ic_driving/
