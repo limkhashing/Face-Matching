@@ -23,7 +23,7 @@ script:
   - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
   - echo 'Running unit test and coverage...'
   - pip install pytest pytest-cov codecov
-  - pytest --cov=tests/
+  - pytest --cov=tests/ --cov-report xml
 
 after_success:
   - codecov --token=fc0c5152-a90c-424b-982a-d66c1db3bd9c

@@ -55,7 +55,7 @@ def extract_frames_from_video(video_path, request_frames_folder_path):
     while cap.isOpened():
         frame_id = cap.get(1)  # current frame number
         ret, frame = cap.read()
-        if ret == True:
+        if ret:
 
             # check rotate_code.
             # If got code, rotate the frame back to original orientation

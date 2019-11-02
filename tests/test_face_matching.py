@@ -68,15 +68,7 @@ class TestFaceMatching(unittest.TestCase):
     def correct_rotation(cls, frame, rotateCode):
         return cv2.rotate(frame, rotateCode)
 
-    @classmethod
-    def create_test_frames_directory(cls):
-        if not os.path.exists(test_frames_path):
-            os.makedirs(test_frames_path)
-
     def test_extract_frames_from_video(self):
-
-        self.create_test_frames_directory()
-
         for filename in os.listdir(test_data_path):
             if filename.endswith(".mov") or filename.endswith(".mp4"):
                 video_path = os.path.join(test_data_path, filename)
@@ -91,7 +83,7 @@ class TestFaceMatching(unittest.TestCase):
                 while cap.isOpened():
                     frame_id = cap.get(1)  # current frame number
                     ret, frame = cap.read()
-                    if ret == True:
+                    if ret:
                         # check rotate_code.
                         # If got code, rotate the frame back to original orientation
                         if rotate_code is not None:
@@ -121,7 +113,7 @@ class TestFaceMatching(unittest.TestCase):
             file_path = os.path.join(test_frames_path, frame)
             try:
                 if os.path.isfile(file_path):
-                    os.unlink(file_path)
+                    assert os.unlink(file_path)
             except Exception as e:
                 print(e)
 
