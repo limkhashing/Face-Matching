@@ -23,8 +23,6 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.5):
 def compare_face(known, video_path, request_upload_folder_path, request_frames_folder_path,
                  tolerance, threshold):
 
-    tolerance, threshold = set_tolerance_and_threshold(tolerance, threshold)
-
     # declare json key and default value pair
     face_found_in_image = False
     face_found_in_video = False
@@ -87,9 +85,9 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
                 # See if the first face in the uploaded image matches the known face
                 # provide tolerance level to specify how strict it is. By default is 0.5
                 # Uncomment below for use the API
-                match_results = face_recognition.compare_faces([known_face_encoding], unknown_face_encoding,
-                                                               tolerance=tolerance)
-                print(match_results)
+                # match_results = face_recognition.compare_faces([known_face_encoding], unknown_face_encoding,
+                #                                                tolerance=tolerance)
+                # print(match_results)
     else:
         print("Did not found face in either image or video. Can't proceed to compare with image")
         delete_files(request_upload_folder_path, request_frames_folder_path)
@@ -121,20 +119,3 @@ def get_json_response(face_found_in_image, face_found_in_video, is_match, final_
         "is_match": is_match,
         "confidence": final_confidence
     }
-
-
-def set_tolerance_and_threshold(tolerance, threshold):
-    if tolerance != '':
-        tolerance = float(tolerance)
-    else:
-        tolerance = 0.50
-
-    if threshold != '':
-        threshold = float(threshold)
-    else:
-        threshold = 0.75
-
-    print("Tolerance: ", tolerance)
-    print("Threshold: ", threshold)
-
-    return tolerance, threshold

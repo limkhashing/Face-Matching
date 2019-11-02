@@ -10,7 +10,7 @@ import request_id
 from flask import Flask, jsonify, request, render_template
 from request_id import RequestIdMiddleware
 from image_processing import compare_face
-from constants import *
+from constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, image_size_threshold
 from werkzeug.serving import make_server
 
 app = Flask(__name__)
@@ -56,6 +56,23 @@ def create_directories():
     return request_upload_folder_path, request_frames_folder_path
 
 
+def set_tolerance_and_threshold(tolerance, threshold):
+    if tolerance != '':
+        tolerance = float(tolerance)
+    else:
+        tolerance = 0.50
+
+    if threshold != '':
+        threshold = float(threshold)
+    else:
+        threshold = 0.80
+
+    print("Tolerance: ", tolerance)
+    print("Threshold: ", threshold)
+
+    return tolerance, threshold
+
+
 @app.route('/api/upload', methods=['POST'])
 def upload_image_video():
 
@@ -70,8 +87,15 @@ def upload_image_video():
     # Check if a valid image and video file was uploaded
     known = request.files['known']
     unknown = request.files['unknown']
+
+    # Flask doesn't receive any information about
+    # what type the client intended each value to be.
+    # So it parses all values as strings.
+    # And we need to parse it manually to float and set the value
     tolerance = request.form['tolerance']
     threshold = request.form['threshold']
+    tolerance, threshold = set_tolerance_and_threshold(tolerance, threshold)
+
     if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
         print(known.filename)
         return get_error_result("Image", False)
@@ -79,7 +103,6 @@ def upload_image_video():
         print(unknown.filename)
         return get_error_result("Video", False)
 
-    # unknown_filename = secure_filename(unknown.filename)
     request_upload_folder_path, request_frames_folder_path = create_directories()
 
     # create absolutely paths for the uploaded files
@@ -98,13 +121,13 @@ def upload_image_video():
         # Resize the known image and scale it down
         known_image_size = os.stat(known_filename_path).st_size
         print("Image Size: ", known_image_size)
-
         if known_image_size > image_size_threshold:
             print("Resizing the known image as it was larger than ", image_size_threshold)
             known_image = cv2.imread(known_filename_path)
             resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
             cv2.imwrite(known_filename_path, resized_image)
 
+        # process both image and video
         return compare_face(known_filename_path,
                             video_path,
                             request_upload_folder_path,
@@ -121,5 +144,6 @@ def index():
 if __name__ == '__main__':
     # add own IPV4 address for debug
     # In android, put android:usesCleartextTraffic="true" in manifest application tag
-    server = make_server('192.168.0.161', 8080, middleware)
+    # for allow cross domain to LocalHost
+    server = make_server('0.0.0.0', 8080, middleware)
     server.serve_forever()

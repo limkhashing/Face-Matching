@@ -1,10 +1,19 @@
 language: python
+
 python:
   - "3.6"      # current default Python on Travis CI
+
+before_install:
+  - sudo apt-get install ffmpeg
+
+addons:
+  apt:
+    update: true
+
 # command to install dependencies
 install:
-  - python -m pip install --upgrade pip
   - pip install -r requirements.txt
+
 script:
   - echo 'Installed dependencies. Now run linting'
   - pip install flake8
@@ -12,5 +21,9 @@ script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
   - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  - echo 'Running unit test and coverage...'
+  - pip install pytest pytest-cov codecov
+  - pytest --cov=tests/
+
 after_success:
-  - echo 'Build success'
+  - codecov --token=fc0c5152-a90c-424b-982a-d66c1db3bd9c
