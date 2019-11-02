@@ -1,5 +1,5 @@
 # Face-Comparison 
-[![Build Status](https://travis-ci.com/limkhashing/Face-Matching.svg?branch=master)](https://travis-ci.com/limkhashing/Face-Matching)
+[![Build Status](https://travis-ci.com/limkhashing/Face-Matching.svg?token=sZGsDojxrUtyz1ravQZ4&branch=master)](https://travis-ci.com/limkhashing/Face-Matching)
 [![codecov](https://codecov.io/gh/limkhashing/Face-Matching/branch/master/graph/badge.svg?token=2WDJFB51rs)](https://codecov.io/gh/limkhashing/Face-Matching)
 ![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)
 ![Side Project](https://img.shields.io/badge/Side-Project-yellowgreen.svg)
