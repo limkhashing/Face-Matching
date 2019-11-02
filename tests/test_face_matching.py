@@ -5,7 +5,7 @@ import cv2
 import ffmpeg
 
 from face_recognition import api
-from app import app
+from src.app import app
 
 test_data_path = os.path.join(os.path.dirname(__file__), 'test_data')
 test_frames_path = os.path.join(os.path.dirname(__file__), 'test_frames')

@@ -4,8 +4,8 @@ import math
 
 from flask import jsonify
 
-from delete_files import delete_files
-from video_processing import extract_frames_from_video
+from src.delete_files import delete_files
+from src.video_processing import extract_frames_from_video
 
 
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage

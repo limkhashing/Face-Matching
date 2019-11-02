@@ -3,7 +3,7 @@ import math
 import cv2
 import ffmpeg
 
-from constants import frame_size_threshold
+from src.constants import frame_size_threshold
 
 
 def check_rotation(path_video_file):

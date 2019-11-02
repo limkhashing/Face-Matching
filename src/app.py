@@ -9,8 +9,8 @@ import cv2
 import request_id
 from flask import Flask, jsonify, request, render_template
 from request_id import RequestIdMiddleware
-from image_processing import compare_face
-from constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, image_size_threshold
+from src.image_processing import compare_face
+from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, image_size_threshold
 from werkzeug.serving import make_server
 
 app = Flask(__name__)
