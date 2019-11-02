@@ -13,7 +13,8 @@ from src.image_processing import compare_face
 from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, image_size_threshold
 from werkzeug.serving import make_server
 
-app = Flask(__name__)
+template_dir = os.path.abspath('templates')
+app = Flask(__name__, template_folder=template_dir)
 
 middleware = RequestIdMiddleware(
     app,

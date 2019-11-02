@@ -113,7 +113,7 @@ class TestFaceMatching(unittest.TestCase):
             file_path = os.path.join(test_frames_path, frame)
             try:
                 if os.path.isfile(file_path):
-                    assert os.unlink(file_path)
+                    self.assertIsNone(os.unlink(file_path))
             except Exception as e:
                 print(e)
 
