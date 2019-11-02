@@ -1,0 +1,27 @@
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+codecov.yml
+travis.yml
+/tests
+/sample_data
+
+# real life test data
+/test_data_ic_driving
+/coverage
+/tests/test_data_ic_driving/
+
+# documents
+*.docx
