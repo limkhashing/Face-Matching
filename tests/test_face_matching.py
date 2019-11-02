@@ -68,7 +68,14 @@ class TestFaceMatching(unittest.TestCase):
     def correct_rotation(cls, frame, rotateCode):
         return cv2.rotate(frame, rotateCode)
 
+    @classmethod
+    def create_test_frames_directory(cls):
+        if not os.path.exists(test_frames_path):
+            os.makedirs(test_frames_path)
+
     def test_extract_frames_from_video(self):
+
+        self.create_test_frames_directory()
 
         for filename in os.listdir(test_data_path):
             if filename.endswith(".mov") or filename.endswith(".mp4"):
@@ -119,7 +126,7 @@ class TestFaceMatching(unittest.TestCase):
                 print(e)
 
     @classmethod
-    def face_distance_to_conf(self, face_distance, face_match_threshold=0.5):
+    def face_distance_to_conf(cls, face_distance, face_match_threshold=0.5):
         if face_distance > face_match_threshold:
             range_distance = (1.0 - face_match_threshold)
             linear_val = (1.0 - face_distance) / (range_distance * 2.0)

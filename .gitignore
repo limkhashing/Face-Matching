@@ -109,3 +109,4 @@ venv.bak/
 
 # real life test data
 /test_data_ic_driving
+/coverage

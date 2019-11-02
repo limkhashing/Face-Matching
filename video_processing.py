@@ -71,7 +71,7 @@ def extract_frames_from_video(video_path, request_frames_folder_path):
 
                 if frame_size > frame_size_threshold:
                     print('Resizing the new %d frame of video...' % count)
-                    frame = cv2.resize(frame, None, fx=0.1, fy=0.1, interpolation = cv2.INTER_AREA)
+                    frame = cv2.resize(frame, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
                     cv2.imwrite(request_frames_folder_path + '/frame_%d.jpg' % count, frame)
 
                 count = count + 1

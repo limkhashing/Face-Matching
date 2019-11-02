@@ -1,9 +1,16 @@
 language: python
+
 python:
   - "3.6"      # current default Python on Travis CI
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install ffmpeg
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+
 script:
   - echo 'Installed dependencies. Now run linting'
   - pip install flake8
@@ -14,5 +21,6 @@ script:
   - echo 'Running unit test and coverage...'
   - pip install pytest pytest-cov codecov
   - pytest --cov=tests/
+
 after_success:
   - codecov --token=fc0c5152-a90c-424b-982a-d66c1db3bd9c
