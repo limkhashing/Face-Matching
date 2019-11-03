@@ -1,4 +1,5 @@
-# default codecov configuration
+# By default, codecov.yml is not required. It use default yml from codecov
+# If need to customize codecov project in Codecov, then yaml is required
 codecov:
   require_ci_to_pass: yes
 
@@ -7,14 +8,20 @@ coverage:
   round: down
   range: "70...100"
 
+# Commit Status check
   status:
+#    project: off
+#    patch: off
+#    project: yes
+#    patch: yes
     project:
       default:
-        # Commit Status check
-        # basic
         target: 80
         threshold: 20
-    patch: yes
+    patch
+      default:
+        target: 80
+        threshold: 20
     changes: no
 
 parsers:
@@ -24,3 +31,5 @@ parsers:
       loop: yes
       method: no
       macro: no
+
+comment: false
