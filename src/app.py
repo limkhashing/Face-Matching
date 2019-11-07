@@ -14,7 +14,8 @@ from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS,
 from werkzeug.serving import make_server
 
 template_dir = os.path.abspath('templates')
-app = Flask(__name__, template_folder=template_dir)
+static = os.path.abspath('static')
+app = Flask(__name__, template_folder=template_dir, static_url_path='', static_folder=static)
 
 middleware = RequestIdMiddleware(
     app,
