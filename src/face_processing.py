@@ -4,8 +4,9 @@ import math
 
 from flask import jsonify
 
+from src.OCR.process_ocr import process_ocr
 from src.delete_files import delete_files
-from src.video_processing import extract_frames_from_video
+from src.orientation_processing import extract_frames_from_video
 
 
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
@@ -90,10 +91,9 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
                 # print(match_results)
     else:
         print("Did not found face in either image or video. Can't proceed to compare with image")
+        file_type = process_ocr(known)
         delete_files(request_upload_folder_path, request_frames_folder_path)
-        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence))
-
-    delete_files(request_upload_folder_path, request_frames_folder_path)
+        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))
 
     #####
     # Part 4: Check whether confidence > threshold
@@ -105,17 +105,20 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
     else:
         is_match = False
 
-    print(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence))
     print("=============== Face Matching Successful ===============")
 
-    return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence))
+    file_type = process_ocr(known)
+
+    delete_files(request_upload_folder_path, request_frames_folder_path)
+
+    return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))
 
 
-def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence):
-    # declare json key and default value pair
+def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type):
     return {
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
-        "confidence": final_confidence
+        "confidence": final_confidence,
+        "file_type": file_type
     }

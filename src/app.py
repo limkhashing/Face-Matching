@@ -6,12 +6,16 @@
 import os
 
 import cv2
+import ffmpeg
 import request_id
 from flask import Flask, jsonify, request, render_template
 from request_id import RequestIdMiddleware
-from src.image_processing import compare_face
-from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, image_size_threshold
 from werkzeug.serving import make_server
+
+from src.OCR.crop_morphology import crop_morphology
+from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, \
+    image_size_threshold
+from src.face_processing import compare_face
 
 template_dir = os.path.abspath('templates')
 static = os.path.abspath('static')
@@ -119,6 +123,10 @@ def upload_image_video():
     video_path = os.path.join(request_upload_folder_path, unknown.filename)
 
     if known and unknown:
+        stream = ffmpeg.input(known_filename_path)
+        stream = ffmpeg.output(stream, known_filename_path)
+        stream = ffmpeg.overwrite_output(stream)
+        ffmpeg.run(stream)
 
         # Resize the known image and scale it down
         known_image_size = os.stat(known_filename_path).st_size
@@ -126,8 +134,10 @@ def upload_image_video():
         if known_image_size > image_size_threshold:
             print("Resizing the known image as it was larger than ", image_size_threshold)
             known_image = cv2.imread(known_filename_path)
-            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
+            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
             cv2.imwrite(known_filename_path, resized_image)
+
+        crop_morphology(known_filename_path)
 
         # process both image and video
         return compare_face(known_filename_path,
