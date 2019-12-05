@@ -64,23 +64,6 @@ class TestFaceMatching(unittest.TestCase):
         self.assertIsInstance(self.tolerance, float)
         self.assertIsInstance(self.threshold, float)
 
-    # fail the upload post request since i dont want to upload any file for testing
-    # it will return http code 400 - bad request
-    def upload(self):
-        return self.app.post(
-            '/api/upload',
-            content_type='multipart/form-data',
-            data=dict(
-                tolerance=0.50,
-                threshold=0.80
-            ),
-            follow_redirects=True
-        )
-
-    def test_post(self):
-        response = self.upload()
-        self.assertEqual(response.status_code, 400)
-
     # test extract frame from video
     @classmethod
     def check_rotation(cls, path_video_file):
@@ -142,28 +125,13 @@ class TestFaceMatching(unittest.TestCase):
 
                 cap.release()
 
-    def test_resize_image(self):
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
-        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
-
-        known_image_size = os.stat(ic_path).st_size
-        if known_image_size > image_size_threshold:
-            known_image = cv2.imread(ic_path)
-            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
-            self.assertTrue(cv2.imwrite(ic_path, resized_image))
-
-        known_image_size = os.stat(driving_license_path).st_size
-        if known_image_size > image_size_threshold:
-            known_image = cv2.imread(driving_license_path)
-            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
-            self.assertTrue(cv2.imwrite(driving_license_path, resized_image))
-
     def test_classify_ID_images(self):
         ic_path = os.path.join(test_data_path, 'IC.jpg')
         driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
-        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+        pytesseract.pytesseract.tesseract_cmd = 'D:/Tesseract-OCR/tesseract.exe'
+        # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
         IDENTITY_CARD = "IDENTITY CARD"
         DRIVING_LICENSE = "DRIVING LICENSE"
@@ -172,9 +140,9 @@ class TestFaceMatching(unittest.TestCase):
         image_size = [600, 700, 800]
         image_list = [ic_path, driving_license_path, passport_path]
         regex_found = False
-        doc_type = None
 
         for image in image_list:
+            doc_type = None
             for size in image_size:
                 img = cv2.imread(image)
                 img = cv2.resize(img, (size, size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
@@ -216,6 +184,22 @@ class TestFaceMatching(unittest.TestCase):
                 self.assertIs(doc_type, DRIVING_LICENSE)
             if image is passport_path:
                 self.assertIs(doc_type, PASSPORT)
+
+    def test_resize_image(self):
+        ic_path = os.path.join(test_data_path, 'IC.jpg')
+        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
+
+        known_image_size = os.stat(ic_path).st_size
+        if known_image_size > image_size_threshold:
+            known_image = cv2.imread(ic_path)
+            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
+            self.assertTrue(cv2.imwrite(ic_path, resized_image))
+
+        known_image_size = os.stat(driving_license_path).st_size
+        if known_image_size > image_size_threshold:
+            known_image = cv2.imread(driving_license_path)
+            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
+            self.assertTrue(cv2.imwrite(driving_license_path, resized_image))
 
     def test_delete_files(self):
         for frame in os.listdir(test_frames_path):
