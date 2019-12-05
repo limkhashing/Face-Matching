@@ -162,7 +162,7 @@ class TestFaceMatching(unittest.TestCase):
         driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
-        pytesseract.pytesseract.tesseract_cmd = r'D:/Tesseract-OCR/tesseract.exe'
+        # pytesseract.pytesseract.tesseract_cmd = r'D:/Tesseract-OCR/tesseract.exe'
 
         IDENTITY_CARD = "IDENTITY CARD"
         DRIVING_LICENSE = "DRIVING LICENSE"
