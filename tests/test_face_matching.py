@@ -1,11 +1,15 @@
 import math
+import re
 import unittest
 import os
 import cv2
 import ffmpeg
+import pytesseract
 
 from face_recognition import api
 from src.app import app
+from tests.regex_patterns import IC_NUMBER_REGREX, IC_PATTERNS, DRIVING_DATE_REGREX, DRIVING_IC_NUMBER_REGREX, \
+    DRIVING_PATTERN, PASSPORT_DATE_REGREX, PASSPORT_PATTERNS
 
 test_data_path = os.path.join(os.path.dirname(__file__), 'test_data')
 test_frames_path = os.path.join(os.path.dirname(__file__), 'test_frames')
@@ -152,6 +156,65 @@ class TestFaceMatching(unittest.TestCase):
             known_image = cv2.imread(driving_license_path)
             resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
             self.assertTrue(cv2.imwrite(driving_license_path, resized_image))
+
+    def test_classify_ID_images(self):
+        ic_path = os.path.join(test_data_path, 'IC.jpg')
+        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
+        passport_path = os.path.join(test_data_path, 'passport.jpg')
+
+        pytesseract.pytesseract.tesseract_cmd = r'D:/Tesseract-OCR/tesseract.exe'
+
+        IDENTITY_CARD = "IDENTITY CARD"
+        DRIVING_LICENSE = "DRIVING LICENSE"
+        PASSPORT = "PASSPORT"
+
+        image_size = [600, 700, 800]
+        image_list = [ic_path, driving_license_path, passport_path]
+        regex_found = False
+        doc_type = None
+
+        for image in image_list:
+            for size in image_size:
+                img = cv2.imread(image)
+                img = cv2.resize(img, (size, size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+                ocr_result = pytesseract.image_to_string(img).upper()
+                results = ocr_result.split()
+
+                # check ic
+                for result in results:
+                    regex_found = re.search(IC_NUMBER_REGREX, result)
+                    if bool(regex_found):
+                        break
+                if any(pattern in results for pattern in IC_PATTERNS) or bool(regex_found):
+                    doc_type = IDENTITY_CARD
+
+                # check driving, with regrex Date and IC Number
+                for result in results:
+                    regex_found = re.search(DRIVING_DATE_REGREX, result)
+                    if bool(regex_found):
+                        break
+                    regex_found = re.search(DRIVING_IC_NUMBER_REGREX, result)
+                    if bool(regex_found):
+                        break
+                if any(pattern in results for pattern in DRIVING_PATTERN) or bool(regex_found):
+                    doc_type = DRIVING_LICENSE
+
+                # check passport
+                for result in results:
+                    regex_found = re.search(PASSPORT_DATE_REGREX, result)
+                    if bool(regex_found):
+                        break
+                if any(pattern in results for pattern in PASSPORT_PATTERNS) or bool(regex_found):
+                    doc_type = PASSPORT
+
+            if image is ic_path:
+                self.assertIs(doc_type, IDENTITY_CARD)
+            if image is driving_license_path:
+                self.assertIs(doc_type, DRIVING_LICENSE)
+            if image is passport_path:
+                self.assertIs(doc_type, PASSPORT)
 
     def test_delete_files(self):
         for frame in os.listdir(test_frames_path):
