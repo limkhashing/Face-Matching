@@ -163,7 +163,7 @@ class TestFaceMatching(unittest.TestCase):
         driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
-        pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.0.0_1/bin/tesseract'
+        pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.0.0/bin/tesseract'
 
         IDENTITY_CARD = "IDENTITY CARD"
         DRIVING_LICENSE = "DRIVING LICENSE"
