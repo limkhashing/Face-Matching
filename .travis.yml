@@ -17,7 +17,11 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - find tesseract
+  - tesseract -v
+  - whereis tesseract
+  - which tesseract
+  - command -v tesseract
+  - dpkg --listfiles tesseract-ocr
   - echo 'Installed dependencies. Now run linting'
   - pip install flake8
     # stop the build if there are Python syntax errors or undefined names
