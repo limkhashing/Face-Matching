@@ -7,6 +7,8 @@ import ffmpeg
 import pytesseract
 
 from face_recognition import api
+from flask import Flask
+
 from src.app import app
 from tests.regex_patterns import IC_NUMBER_REGREX, IC_PATTERNS, DRIVING_DATE_REGREX, DRIVING_IC_NUMBER_REGREX, \
     DRIVING_PATTERN, PASSPORT_DATE_REGREX, PASSPORT_PATTERNS
@@ -21,6 +23,10 @@ class TestFaceMatching(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
+
+        template_dir = os.path.abspath('../templates')
+        static = os.path.abspath('../static')
+        self.app = Flask(__name__, template_folder=template_dir, static_url_path='', static_folder=static)
         self.app = app.test_client()
         self.tolerance = ''
         self.threshold = ''
@@ -57,11 +63,6 @@ class TestFaceMatching(unittest.TestCase):
             self.threshold = 0.80
         self.assertIsInstance(self.tolerance, float)
         self.assertIsInstance(self.threshold, float)
-
-    # test flask endpoint
-    def test_home_status_code(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
 
     # fail the upload post request since i dont want to upload any file for testing
     # it will return http code 400 - bad request
