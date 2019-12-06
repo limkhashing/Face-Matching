@@ -5,6 +5,11 @@ python:
 
 before_install:
   - sudo apt-get install ffmpeg
+  - sudo apt-get install tesseract-ocr
+  - sudo apt-get install tesseract-ocr-eng
+  - sudo apt-get install tesseract-ocr-mal
+  - sudo apt-get install tesseract-ocr-osd
+  - sudo apt-get install libtesseract-dev
 
 addons:
   apt:
@@ -15,6 +20,11 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - tesseract -v
+  - whereis tesseract
+  - which tesseract
+  - command -v tesseract
+  - dpkg --listfiles tesseract-ocr
   - echo 'Installed dependencies. Now run linting'
   - pip install flake8
     # stop the build if there are Python syntax errors or undefined names

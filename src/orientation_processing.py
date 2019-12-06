@@ -1,5 +1,6 @@
-import os
 import math
+import os
+
 import cv2
 import ffmpeg
 
@@ -15,32 +16,31 @@ def check_rotation(path_video_file):
 
     # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key
     # we are looking for
-    rotateCode = None
+    rotate_code = None
     rotate_angle = 'NO_ROTATE'
 
     # try rotate the image by finding rotate key meta_dict
     # if no, prompt message
-
     for stream in meta_dict['streams']:
         if 'rotate' in stream['tags']:
             if int(stream['tags']['rotate']) == 90:
-                rotateCode = cv2.ROTATE_90_CLOCKWISE
+                rotate_code = cv2.ROTATE_90_CLOCKWISE
                 rotate_angle = 'ROTATE_90_CLOCKWISE'
             elif int(stream['tags']['rotate']) == 180:
-                rotateCode = cv2.ROTATE_180
+                rotate_code = cv2.ROTATE_180
                 rotate_angle = 'ROTATE_180'
             elif int(stream['tags']['rotate']) == 270:
-                rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
+                rotate_code = cv2.ROTATE_90_COUNTERCLOCKWISE
                 rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
             else:
                 print("No rotation metadata. Skip check rotation")
 
     print("Rotated to = ", rotate_angle)
-    return rotateCode
+    return rotate_code
 
 
-def correct_rotation(frame, rotateCode):
-    return cv2.rotate(frame, rotateCode)
+def correct_rotation(frame, rotate_code):
+    return cv2.rotate(frame, rotate_code)
 
 
 def extract_frames_from_video(video_path, request_frames_folder_path):
@@ -57,7 +57,7 @@ def extract_frames_from_video(video_path, request_frames_folder_path):
         ret, frame = cap.read()
         if ret:
 
-            # check rotate_code.
+            # check rotate_code
             # If got code, rotate the frame back to original orientation
             if rotate_code is not None:
                 frame = correct_rotation(frame, rotate_code)
