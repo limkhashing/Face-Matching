@@ -6,6 +6,7 @@ python:
 before_install:
   - sudo apt-get install ffmpeg
   - sudo apt-get install tesseract-ocr
+  - sudo apt-get install tesseract-ocr-eng
   - sudo apt-get install libtesseract-dev
 
 addons:

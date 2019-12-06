@@ -130,8 +130,8 @@ class TestFaceMatching(unittest.TestCase):
         driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
-        # pytesseract.pytesseract.tesseract_cmd = 'D:/Tesseract-OCR/tesseract.exe'
-        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
+        pytesseract.pytesseract.tesseract_cmd = 'D:/Tesseract-OCR/tesseract.exe'
+        # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
         IDENTITY_CARD = "IDENTITY CARD"
         DRIVING_LICENSE = "DRIVING LICENSE"
@@ -150,7 +150,7 @@ class TestFaceMatching(unittest.TestCase):
 
                 ocr_result = pytesseract.image_to_string(img).upper()
                 results = ocr_result.split()
-
+                print(results)
                 # check ic
                 for result in results:
                     regex_found = re.search(IC_NUMBER_REGREX, result)
