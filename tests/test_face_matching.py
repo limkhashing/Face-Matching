@@ -125,69 +125,6 @@ class TestFaceMatching(unittest.TestCase):
 
                 cap.release()
 
-    def test_classify_ID_images(self):
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
-        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
-        passport_path = os.path.join(test_data_path, 'passport.jpg')
-
-        # pytesseract.pytesseract.tesseract_cmd = 'D:/Tesseract-OCR/tesseract.exe'
-        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
-
-        IDENTITY_CARD = "IDENTITY CARD"
-        DRIVING_LICENSE = "DRIVING LICENSE"
-        PASSPORT = "PASSPORT"
-
-        image_size = [600, 700, 800]
-        image_list = [ic_path, driving_license_path, passport_path]
-        regex_found = False
-
-        for image in image_list:
-            doc_type = None
-            for size in image_size:
-                img = cv2.imread(image)
-                img = cv2.resize(img, (size, size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-
-                ocr_result = pytesseract.image_to_string(img).upper()
-                results = ocr_result.split()
-                print(results)
-
-                # check ic
-                for result in results:
-                    regex_found = re.search(IC_NUMBER_REGREX, result)
-                    if bool(regex_found):
-                        break
-                if any(pattern in results for pattern in IC_PATTERNS) or bool(regex_found):
-                    doc_type = IDENTITY_CARD
-
-                # check driving, with regrex Date and IC Number
-                for result in results:
-                    regex_found = re.search(DRIVING_DATE_REGREX, result)
-                    if bool(regex_found):
-                        break
-                    regex_found = re.search(DRIVING_IC_NUMBER_REGREX, result)
-                    if bool(regex_found):
-                        break
-                if any(pattern in results for pattern in DRIVING_PATTERN) or bool(regex_found):
-                    doc_type = DRIVING_LICENSE
-
-                # check passport
-                for result in results:
-                    regex_found = re.search(PASSPORT_DATE_REGREX, result)
-                    if bool(regex_found):
-                        break
-                if any(pattern in results for pattern in PASSPORT_PATTERNS) or bool(regex_found):
-                    doc_type = PASSPORT
-
-            if image is ic_path:
-                print(doc_type)
-                # self.assertIs(doc_type, IDENTITY_CARD)
-            if image is driving_license_path:
-                print(doc_type)
-                # self.assertIs(doc_type, DRIVING_LICENSE)
-            if image is passport_path:
-                print(doc_type)
-                # self.assertIs(doc_type, PASSPORT)
 
     def test_resize_image(self):
         ic_path = os.path.join(test_data_path, 'IC.jpg')
