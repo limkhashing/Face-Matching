@@ -12,6 +12,7 @@ IDENTITY_CARD = "IDENTITY CARD"
 DRIVING_LICENSE = "DRIVING LICENSE"
 PASSPORT = "PASSPORT"
 
+
 def process_ocr(image_path):
     print("Processing image for OCR...")
     # loop 600 to 800

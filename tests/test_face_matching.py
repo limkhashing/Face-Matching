@@ -180,14 +180,11 @@ class TestFaceMatching(unittest.TestCase):
                     doc_type = PASSPORT
 
             if image is ic_path:
-                print(doc_type)
-                # self.assertIs(doc_type, IDENTITY_CARD)
+                self.assertIs(doc_type, IDENTITY_CARD)
             if image is driving_license_path:
-                print(doc_type)
-                # self.assertIs(doc_type, DRIVING_LICENSE)
+                self.assertIs(doc_type, DRIVING_LICENSE)
             if image is passport_path:
-                print(doc_type)
-                # self.assertIs(doc_type, PASSPORT)
+                self.assertIs(doc_type, PASSPORT)
 
     def test_resize_image(self):
         ic_path = os.path.join(test_data_path, 'IC.jpg')
