@@ -4,6 +4,7 @@ libfontconfig1
 libice6
 libxext6
 ffmpeg
+tesseract-ocr
 tesseract-ocr-eng
 tesseract-ocr-mal
 tesseract-ocr-osd
