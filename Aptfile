@@ -3,13 +3,4 @@ libxrender1
 libfontconfig1
 libice6
 libxext6
-libpng12-0
-libpng12-dev
-libpng-dev
-libpng16-16
 ffmpeg
-tesseract-ocr
-tesseract-ocr-eng
-tesseract-ocr-mal
-tesseract-ocr-osd
-libtesseract-dev
