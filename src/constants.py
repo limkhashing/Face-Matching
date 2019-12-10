@@ -13,3 +13,5 @@ upload_folder = "./upload"
 # Constant threshold for resizing
 frame_size_threshold = 200000
 image_size_threshold = 500000
+max_resize = 40000
+

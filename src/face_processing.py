@@ -90,8 +90,9 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
                 #                                                tolerance=tolerance)
                 # print(match_results)
     else:
-        print("Did not found face in either image or video. Can't proceed to compare with image")
         file_type = process_ocr(known)
+        print("Done")
+        print("Did not found face in either image or video. Can't proceed to compare with image")
         delete_files(request_upload_folder_path, request_frames_folder_path)
         return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))
 
@@ -108,7 +109,7 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
     print("=============== Face Matching Successful ===============")
 
     file_type = process_ocr(known)
-
+    print("Done")
     delete_files(request_upload_folder_path, request_frames_folder_path)
 
     return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))

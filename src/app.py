@@ -14,7 +14,7 @@ from werkzeug.serving import make_server
 
 from src.OCR.crop_morphology import crop_morphology
 from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, \
-    image_size_threshold
+    image_size_threshold, max_resize
 from src.face_processing import compare_face
 
 template_dir = os.path.abspath('templates')
@@ -123,10 +123,6 @@ def upload_image_video():
     video_path = os.path.join(request_upload_folder_path, unknown.filename)
 
     if known and unknown:
-        stream = ffmpeg.input(known_filename_path)
-        stream = ffmpeg.output(stream, known_filename_path)
-        stream = ffmpeg.overwrite_output(stream)
-        ffmpeg.run(stream)
 
         # Resize the known image and scale it down
         known_image_size = os.stat(known_filename_path).st_size
@@ -136,6 +132,14 @@ def upload_image_video():
             known_image = cv2.imread(known_filename_path)
             resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
             cv2.imwrite(known_filename_path, resized_image)
+            print("Resized image ", os.stat(known_filename_path).st_size)
+
+            if os.stat(known_filename_path).st_size < max_resize:
+                print("Enlarge back as it smaller than ", max_resize)
+                known_image = cv2.imread(known_filename_path)
+                resized_image = cv2.resize(known_image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+                cv2.imwrite(known_filename_path, resized_image)
+                print("Resized image ", os.stat(known_filename_path).st_size)
 
         crop_morphology(known_filename_path)
 
