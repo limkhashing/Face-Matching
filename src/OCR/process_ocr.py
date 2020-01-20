@@ -29,11 +29,11 @@ def process_ocr(image_path):
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
         ocr_result = pytesseract.image_to_string(img).upper()
-        print(ocr_result)
+        # print(ocr_result)
         # print("=====================================")
 
         results = ocr_result.split()
-        print(results)
+        # print(results)
         # print("=====================================")
 
         # check ic
