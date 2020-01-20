@@ -6,7 +6,6 @@
 import os
 
 import cv2
-import ffmpeg
 import request_id
 from flask import Flask, jsonify, request, render_template
 from request_id import RequestIdMiddleware

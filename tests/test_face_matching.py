@@ -19,11 +19,11 @@ image_size_threshold = 500000
 frame_size_threshold = 200000
 
 
+# TODO write tests for flask endpoint, face matching and ocr
 class TestFaceMatching(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
-
         template_dir = os.path.abspath('../templates')
         static = os.path.abspath('../static')
         self.app = Flask(__name__, template_folder=template_dir, static_url_path='', static_folder=static)
@@ -35,121 +35,19 @@ class TestFaceMatching(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_tolerance_and_threshold_value(self):
-        # test default tolerance and threshold value
-        if self.tolerance != '':
-            self.tolerance = float(self.tolerance)
-        else:
-            self.tolerance = 0.50
-
-        if self.threshold != '':
-            self.threshold = float(self.threshold)
-        else:
-            self.threshold = 0.80
+    def test_tolerance_and_threshold_default_value(self):
+        self.tolerance = 0.50
+        self.threshold = 0.80
         self.assertIsInstance(self.tolerance, float)
         self.assertIsInstance(self.threshold, float)
 
-        # test tolerance and threshold specified value
+    def test_tolerance_and_threshold_specified_value(self):
         self.tolerance = '50'
         self.threshold = '80'
-        if self.tolerance != '':
-            self.tolerance = float(self.tolerance)
-        else:
-            self.tolerance = 0.50
-
-        if self.threshold != '':
-            self.threshold = float(self.threshold)
-        else:
-            self.threshold = 0.80
+        self.tolerance = float(self.tolerance)
+        self.threshold = float(self.threshold)
         self.assertIsInstance(self.tolerance, float)
         self.assertIsInstance(self.threshold, float)
-
-    # test extract frame from video
-    @classmethod
-    def check_rotation(cls, path_video_file):
-        print("Checking orientation of video received")
-
-        meta_dict = ffmpeg.probe(path_video_file)
-        rotateCode = None
-        rotate_angle = ''
-
-        for stream in meta_dict['streams']:
-            if 'rotate' in stream['tags']:
-                if int(stream['tags']['rotate']) == 90:
-                    rotateCode = cv2.ROTATE_90_CLOCKWISE
-                    rotate_angle = 'ROTATE_90_CLOCKWISE'
-                elif int(stream['tags']['rotate']) == 180:
-                    rotateCode = cv2.ROTATE_180
-                    rotate_angle = 'ROTATE_180'
-                elif int(stream['tags']['rotate']) == 270:
-                    rotateCode = cv2.ROTATE_90_COUNTERCLOCKWISE
-                    rotate_angle = 'ROTATE_90_COUNTERCLOCKWISE'
-                else:
-                    rotate_angle = 'NO_ROTATE'
-        print("Rotated to = ", rotate_angle)
-        return rotateCode
-
-    @classmethod
-    def correct_rotation(cls, frame, rotateCode):
-        return cv2.rotate(frame, rotateCode)
-
-    def test_extract_frames_from_video(self):
-        for filename in os.listdir(test_data_path):
-            if filename.endswith(".mov") or filename.endswith(".mp4"):
-                video_path = os.path.join(test_data_path, filename)
-                count = 0
-
-                rotate_code = self.check_rotation(video_path)
-
-                cap = cv2.VideoCapture(video_path)
-                frame_rate = cap.get(5)
-
-                while cap.isOpened():
-                    frame_id = cap.get(1)
-                    ret, frame = cap.read()
-                    if ret:
-                        if rotate_code is not None:
-                            frame = self.correct_rotation(frame, rotate_code)
-
-                        if frame_id % math.floor(frame_rate) == 0:
-                            self.assertTrue(cv2.imwrite(test_frames_path + '/frame_%d.jpg' % count, frame))
-
-                            frame_size = os.stat(test_frames_path + '/frame_%d.jpg' % count).st_size
-
-                            if frame_size > frame_size_threshold:
-                                frame = cv2.resize(frame, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
-                                self.assertTrue(cv2.imwrite(test_frames_path + '/frame_%d.jpg' % count, frame))
-                            count = count + 1
-                    else:
-                        break
-
-                cap.release()
-
-
-    def test_resize_image(self):
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
-        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
-
-        known_image_size = os.stat(ic_path).st_size
-        if known_image_size > image_size_threshold:
-            known_image = cv2.imread(ic_path)
-            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
-            self.assertTrue(cv2.imwrite(ic_path, resized_image))
-
-        known_image_size = os.stat(driving_license_path).st_size
-        if known_image_size > image_size_threshold:
-            known_image = cv2.imread(driving_license_path)
-            resized_image = cv2.resize(known_image, None, fx=0.1, fy=0.1)
-            self.assertTrue(cv2.imwrite(driving_license_path, resized_image))
-
-    def test_delete_files(self):
-        for frame in os.listdir(test_frames_path):
-            file_path = os.path.join(test_frames_path, frame)
-            try:
-                if os.path.isfile(file_path):
-                    self.assertIsNone(os.unlink(file_path))
-            except Exception as e:
-                print(e)
 
     #  test face matching functions
     @classmethod
