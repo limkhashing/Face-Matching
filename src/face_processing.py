@@ -90,11 +90,11 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
                 #                                                tolerance=tolerance)
                 # print(match_results)
     else:
-        file_type = process_ocr(known)
+        file_type, ocr_results = process_ocr(known)
         print("Done")
         print("Did not found face in either image or video. Can't proceed to compare with image")
         delete_files(request_upload_folder_path, request_frames_folder_path)
-        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))
+        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results))
 
     #####
     # Part 4: Check whether confidence > threshold
@@ -108,18 +108,19 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
 
     print("=============== Face Matching Successful ===============")
 
-    file_type = process_ocr(known)
+    file_type, ocr_results = process_ocr(known)
     print("Done")
     delete_files(request_upload_folder_path, request_frames_folder_path)
 
-    return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type))
+    return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results))
 
 
-def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type):
+def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results):
     return {
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
         "confidence": final_confidence,
-        "file_type": file_type
+        "file_type": file_type,
+        "ocr_results": ocr_results
     }
