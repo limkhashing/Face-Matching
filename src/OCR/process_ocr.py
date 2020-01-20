@@ -25,7 +25,7 @@ def process_ocr(image_path):
 
     for size in image_size:
         img = cv2.imread(image_path)
-        img = cv2.resize(img, (size,size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
+        img = cv2.resize(img, (size, size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
         ocr_result = pytesseract.image_to_string(img).upper()
@@ -64,7 +64,7 @@ def process_ocr(image_path):
                 break
         if any(pattern in results for pattern in PASSPORT_PATTERNS) or bool(regex_found):
             return PASSPORT, results
-
-    return None, None
         # cv2.imshow('image', img)
         # cv2.waitKey()
+    return None, None
+
