@@ -18,8 +18,5 @@ travis.yml
 /tests
 /sample_data
 
-# real life test data
-/test_data_ic_driving
-
 # documents
 *.docx

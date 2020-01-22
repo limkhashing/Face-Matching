@@ -108,5 +108,4 @@ venv.bak/
 *.docx
 
 # real life test data
-/tests/test_data_ic_driving/
-/sample_data/ic 2.jpg
+/tests/test_data_ic_driving_passport/

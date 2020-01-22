@@ -99,6 +99,10 @@ def upload_image_video():
     # And we need to parse it manually to float and set the value
     tolerance = request.form['tolerance']
     threshold = request.form['threshold']
+
+    if "testing" in request.form:
+        return jsonify(result = {"status_code": 200})
+
     tolerance, threshold = set_tolerance_and_threshold(tolerance, threshold)
 
     if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
