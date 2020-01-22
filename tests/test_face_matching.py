@@ -124,8 +124,6 @@ class TestFaceMatching(unittest.TestCase):
                     break
             if any(pattern in results for pattern in PASSPORT_PATTERNS) or bool(regex_found):
                 return PASSPORT, results
-            # cv2.imshow('image', img)
-            # cv2.waitKey()
         return None, None
 
     def test_identity_card_ocr(self):
