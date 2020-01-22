@@ -54,7 +54,8 @@ def process_ocr(image_path):
             regex_found = re.search(DRIVING_IC_NUMBER_REGREX, result)
             if bool(regex_found):
                 break
-        if any(pattern in results for pattern in DRIVING_PATTERN) or bool(regex_found):
+        if (any(pattern in results for pattern in DRIVING_PATTERN) or bool(regex_found))\
+                and not any(pattern in results for pattern in PASSPORT_PATTERNS):
             return DRIVING_LICENSE, results
 
         # check passport
