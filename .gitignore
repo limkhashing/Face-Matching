@@ -109,3 +109,4 @@ venv.bak/
 
 # real life test data
 /tests/test_data_ic_driving_passport/
+/Documentation/
