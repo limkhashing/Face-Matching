@@ -44,7 +44,7 @@ class TestFaceMatching(unittest.TestCase):
     def test_api_route(self):
         url = '/api/upload'
 
-        mock_image = os.path.join(test_data_path, 'IC.jpg')
+        mock_image = os.path.join(test_data_path, 'my ic.jpg')
         mock_video = os.path.join(test_data_path, 'my video.mov')
         data = dict(
             known=(io.BytesIO(b"known"), mock_image),
@@ -60,7 +60,7 @@ class TestFaceMatching(unittest.TestCase):
 
     def test_bad_route(self):
         url = '/api/upload'
-        mock_image = os.path.join(test_data_path, 'IC.jpg')
+        mock_image = os.path.join(test_data_path, 'my ic.jpg')
         data = dict(
             known=(io.BytesIO(b"known"), mock_image),
             tolerance=0.50,
@@ -128,7 +128,7 @@ class TestFaceMatching(unittest.TestCase):
         return None, None
 
     def test_identity_card_ocr(self):
-        ocr_result = self.process_ocr(os.path.join(test_data_path, 'IC.jpg'))
+        ocr_result = self.process_ocr(os.path.join(test_data_path, 'identity card.jpg'))
         self.assertEqual(ocr_result[0], 'IDENTITY CARD')
         self.assertNotEqual(ocr_result[0], 'DRIVING LICENSE')
         self.assertNotEqual(ocr_result[0], 'PASSPORT')
@@ -172,8 +172,8 @@ class TestFaceMatching(unittest.TestCase):
             return linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))
 
     def test_face_matching(self):
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
-        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
+        driving_license_path = os.path.join(test_data_path, 'my driving license.jpg')
 
         image_ic = api.load_image_file(ic_path)
         image_driving_license = api.load_image_file(driving_license_path)
@@ -191,8 +191,8 @@ class TestFaceMatching(unittest.TestCase):
         self.tolerance = 0.50
         self.threshold = 0.80
 
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
-        driving_license_path = os.path.join(test_data_path, 'driving license.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
+        driving_license_path = os.path.join(test_data_path, 'my driving license.jpg')
 
         image_ic = api.load_image_file(ic_path)
         image_driving_license = api.load_image_file(driving_license_path)
@@ -209,7 +209,7 @@ class TestFaceMatching(unittest.TestCase):
         self.tolerance = 0.50
         self.threshold = 0.80
 
-        ic_path = os.path.join(test_data_path, 'IC.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
         image_ic = api.load_image_file(ic_path)
