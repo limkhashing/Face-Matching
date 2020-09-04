@@ -29,9 +29,9 @@ middleware = RequestIdMiddleware(
 def get_error_result(source_type, is_no_files):
     if is_no_files:
         result = {
-                "status_code": 400,
-                "error": "No " + source_type + " Found"
-            }
+            "status_code": 400,
+            "error": "No " + source_type + " Found"
+        }
     else:
         result = {
             "status_code": 400,
@@ -80,7 +80,6 @@ def set_tolerance_and_threshold(tolerance, threshold):
 
 @app.route('/api/upload', methods=['POST'])
 def upload_image_video():
-
     # Check whether files is uploaded or not
     if request.files['known'].filename == '':
         print("no files in known")
@@ -101,7 +100,7 @@ def upload_image_video():
     threshold = request.form['threshold']
 
     if "testing" in request.form:
-        return jsonify(result = {"status_code": 200})
+        return jsonify(result={"status_code": 200})
 
     tolerance, threshold = set_tolerance_and_threshold(tolerance, threshold)
 
@@ -122,7 +121,6 @@ def upload_image_video():
     # Example: upload/request-id/image.jpg
     unknown.save(unknown_filename_path)
     known.save(known_filename_path)
-
     video_path = os.path.join(request_upload_folder_path, unknown.filename)
 
     if known and unknown:
@@ -152,7 +150,7 @@ def upload_image_video():
                             request_upload_folder_path,
                             request_frames_folder_path,
                             tolerance=tolerance,
-                            threshold=threshold)
+                            face_match_threshold=threshold)
 
 
 @app.route('/')

@@ -1,3 +1,5 @@
+# Remember to put FFMPEG in variable path
+
 import math
 import os
 
@@ -14,13 +16,12 @@ def check_rotation(path_video_file):
     # this returns meta-data of the video file in form of a dictionary
     meta_dict = ffmpeg.probe(path_video_file)
 
-    # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key
-    # we are looking for
+    # from the dictionary, meta_dict['streams'][0]['tags']['rotate'] is the key we are looking for
     rotate_code = None
     rotate_angle = 'NO_ROTATE'
 
     # try rotate the image by finding rotate key meta_dict
-    # if no, prompt message
+    # if no, prompt message and skip
     for stream in meta_dict['streams']:
         if 'rotate' in stream['tags']:
             if int(stream['tags']['rotate']) == 90:

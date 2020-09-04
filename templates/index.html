@@ -6,23 +6,28 @@
     </head>
 <body>
 
-    <h1>Upload a picture and a video and see if it's same person!</h1>
-    <form method="POST" enctype="multipart/form-data" action="/api/upload">
-        <p> Upload the first picture:  <input type="file" name="known"> </p>
+<h1>Upload a picture and a video and see if it's same person!</h1>
+<form method="POST" enctype="multipart/form-data" action="/api/upload">
+    <p> Upload the first picture: <input type="file" name="known"></p>
 
-        <p> Upload a video to compare:
-        <input type="file" name="unknown"> </p>
+    <p> Upload a video to compare:
+        <input type="file" name="unknown"></p>
 
-        <p> You can specify the tolerance if you wish to (from 0.0 to 1.0). By default is 0.50 </p>
-        <p> Tolerance is to measure How much distance between faces to consider it a match. Lower is more strict </p>
-        <input type="number" name="tolerance"
-               min="0" max="1" step="0.01" placeholder="0.50"> <br>
+    <p> You can specify the tolerance if you wish to (from 0.0 to 1.0). By default is 0.50 </p>
+    <p> Tolerance is to measure how much distance between faces to consider it a match. Lower is more strict </p>
+    <input type="number" name="tolerance"
+           min="0" max="1" step="0.01" placeholder="0.50"> <br>
 
-        <p> Please specify the threshold to consider the face matching is pass. By default is 0.80 </p>
-        <input type="number" name="threshold"
-               min="0" max="1" step="0.01" placeholder="0.80"> <br> <br>
-      <input type="submit" value="Compare">
-    </form>
+    <p> Please specify the threshold for sharpness to consider as a valid document photo. By default is 0.60</p>
+    <input type="number" name="sharpness"
+           min="0" max="1" step="0.01" placeholder="0.60"> <br>
+
+    <p> Please specify the threshold to consider the face matching is pass. By default is 0.80 </p>
+    <input type="number" name="threshold"
+           min="0" max="1" step="0.01" placeholder="0.80"> <br> <br>
+
+    <input type="submit" value="Compare">
+</form>
 </body>
 
 </html>

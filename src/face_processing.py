@@ -1,12 +1,14 @@
-import os
-import face_recognition
 import math
+import os
 
+import face_recognition
+from PIL import Image
 from flask import jsonify
 
-from src.OCR.process_ocr import process_ocr
+from src.OCR.oct_process import process_ocr
 from src.delete_files import delete_files
 from src.orientation_processing import extract_frames_from_video
+from src.sharpness_processing import calculate_sharpness
 
 
 # https://github.com/ageitgey/face_recognition/wiki/Calculating-Accuracy-as-a-Percentage
@@ -21,8 +23,9 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.5):
         return linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))
 
 
-def compare_face(known, video_path, request_upload_folder_path, request_frames_folder_path,
-                 tolerance, threshold):
+def compare_face(known_path, video_path, request_upload_folder_path, request_frames_folder_path,
+                 tolerance=0.50, face_match_threshold=0.80, sharpness_threshold=0.60):
+    cropped_face_path = os.path.join(request_upload_folder_path, "cropped_face.jpg")
 
     # declare json key and default value pair
     face_found_in_image = False
@@ -31,14 +34,16 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
     is_match = None
     confidences_list = []
     known_face_encoding = []
+    sharpness_difference = None
 
     # Load the uploaded image file
-    known_image = face_recognition.load_image_file(known)
+    known_image = face_recognition.load_image_file(known_path)
     # face_encodings without [] is to get face encodings for any faces in the uploaded image
     known_face_encodings = face_recognition.face_encodings(known_image)
 
     #####
-    # Part 1: Check whether there is a face in known image
+    # Part 1
+    # Check whether there is a face in known image
     #####
     if len(known_face_encodings) > 0:
         # since i know the image will always have 1 face, so only get the first face detected
@@ -46,8 +51,15 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
         face_found_in_image = True
         print("Found face in image")
 
+        top, right, bottom, left = face_recognition.face_locations(known_image)[0]
+        face_image = known_image[top:bottom, left:right]
+        cropped_face = Image.fromarray(face_image)
+        cropped_face.save(cropped_face_path, "JPEG")
+        sharpness_difference = calculate_sharpness(known_path, cropped_face_path)
+
     #####
-    # Part 2: Extract frames from video
+    # Part 2
+    # Extract frames from video
     # Then Loop through request frame folder and check whether there is a face
     # if there is at least 1 face, we set to true and break
     #####
@@ -63,7 +75,8 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
             break
 
     #####
-    # Part 3: Perform face matching with image and video
+    # Part 3
+    # Perform face matching with image and video
     # After compared with the face in image with each frame
     # It will automatically delete the uploaded data and frames extracted
     #####
@@ -90,37 +103,46 @@ def compare_face(known, video_path, request_upload_folder_path, request_frames_f
                 #                                                tolerance=tolerance)
                 # print(match_results)
     else:
-        file_type, ocr_results = process_ocr(known)
+        file_type, ocr_results = process_ocr(known_path)
         print("Done")
         print("Did not found face in either image or video. Can't proceed to compare with image")
         delete_files(request_upload_folder_path, request_frames_folder_path)
-        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results))
+        return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence,
+                                         sharpness_difference, file_type, ocr_results))
 
     #####
-    # Part 4: Check whether confidence > threshold
+    # Part 4
+    # Check whether face match confidence > threshold
+    # and check whether sharpness > threshold
     # and return the result as Json
     #####
     final_confidence = sum(confidences_list) / float(len(confidences_list))
-    if final_confidence >= threshold:
+    if final_confidence >= face_match_threshold and sharpness_difference > sharpness_threshold:
         is_match = True
     else:
         is_match = False
 
-    print("=============== Face Matching Successful ===============")
+    print("=============== Face Matching Done ===============")
 
-    file_type, ocr_results = process_ocr(known)
-    print("Done")
+    file_type, ocr_results = process_ocr(known_path)
+
+    print("=============== Processing OCR Done ===============")
+
     delete_files(request_upload_folder_path, request_frames_folder_path)
 
-    return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results))
+    return jsonify(
+        get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_difference,
+                          file_type, ocr_results))
 
 
-def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, file_type, ocr_results):
+def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_difference,
+                      file_type, ocr_results):
     return {
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
         "confidence": final_confidence,
+        "sharpness_difference": sharpness_difference,
         "file_type": file_type,
         "ocr_results": ocr_results
     }
