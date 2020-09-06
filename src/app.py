@@ -1,5 +1,5 @@
 # Author: Lim Kha Shing
-# Reference
+# Reference:
 # https://face-recognition.readthedocs.io/en/latest/_modules/face_recognition/api.html#compare_faces
 # https://raw.githubusercontent.com/ageitgey/face_recognition/master/examples/web_service_example.py
 
@@ -13,7 +13,7 @@ from werkzeug.serving import make_server
 
 from src.OCR.crop_morphology import crop_morphology
 from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, \
-    image_size_threshold, max_resize
+    image_size_threshold, max_resize, source_type_image, source_type_video
 from src.face_processing import compare_face
 
 template_dir = os.path.abspath('templates')
@@ -61,7 +61,7 @@ def create_directories():
     return request_upload_folder_path, request_frames_folder_path
 
 
-def set_tolerance_and_threshold(tolerance, threshold):
+def set_tolerance_and_threshold(tolerance, threshold, sharpness):
     if tolerance != '':
         tolerance = float(tolerance)
     else:
@@ -72,25 +72,55 @@ def set_tolerance_and_threshold(tolerance, threshold):
     else:
         threshold = 0.80
 
-    print("Tolerance: ", tolerance)
-    print("Threshold: ", threshold)
+    if sharpness != '':
+        sharpness = float(sharpness)
+    else:
+        sharpness = 0.60
 
-    return tolerance, threshold
+    print("Tolerance: ", tolerance)
+    print("Face match threshold: ", threshold)
+    print("Sharpness threshold: ", sharpness)
+    return tolerance, threshold, sharpness
+
+
+def check_files_uploaded():
+    if request.files['known'].filename == '':
+        print("no image uploaded")
+        return False, source_type_image
+    if request.files['unknown'].filename == '':
+        print("no video uploaded")
+        return False, source_type_video
+    return True, "pass"
+
+
+def check_valid_files_uploaded(known, unknown):
+    if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
+        return False, source_type_image
+    if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
+        return False, source_type_video
+    return True, "pass"
 
 
 @app.route('/api/upload', methods=['POST'])
 def upload_image_video():
     # Check whether files is uploaded or not
-    if request.files['known'].filename == '':
-        print("no files in known")
-        return get_error_result("Image", True)
-    if request.files['unknown'].filename == '':
-        print("no files in unknown")
-        return get_error_result("Video", True)
+    is_files_uploaded, source_type = check_files_uploaded()
+    if not is_files_uploaded:
+        if source_type == "image":
+            return get_error_result("Image", True)
+        else:
+            return get_error_result("Video", True)
 
-    # Check if a valid image and video file was uploaded
     known = request.files['known']
     unknown = request.files['unknown']
+
+    # Check if a valid image and video file was uploaded
+    is_valid_files_uploaded, source_type = check_valid_files_uploaded(known, unknown)
+    if not is_valid_files_uploaded:
+        if source_type == "image":
+            return get_error_result("Image", True)
+        else:
+            return get_error_result("Video", True)
 
     # Flask doesn't receive any information about
     # what type the client intended each value to be.
@@ -98,22 +128,11 @@ def upload_image_video():
     # And we need to parse it manually to float and set the value
     tolerance = request.form['tolerance']
     threshold = request.form['threshold']
-
-    if "testing" in request.form:
-        return jsonify(result={"status_code": 200})
-
-    tolerance, threshold = set_tolerance_and_threshold(tolerance, threshold)
-
-    if not known.filename.lower().endswith(ALLOWED__PICTURE_EXTENSIONS):
-        print(known.filename)
-        return get_error_result("Image", False)
-    if not unknown.filename.lower().endswith(ALLOWED_VIDEO_EXTENSIONS):
-        print(unknown.filename)
-        return get_error_result("Video", False)
-
-    request_upload_folder_path, request_frames_folder_path = create_directories()
+    sharpness = request.form.get('sharpness')
+    tolerance, threshold, sharpness = set_tolerance_and_threshold(tolerance, threshold, sharpness)
 
     # create absolutely paths for the uploaded files
+    request_upload_folder_path, request_frames_folder_path = create_directories()
     unknown_filename_path = os.path.join(request_upload_folder_path, unknown.filename)
     known_filename_path = os.path.join(request_upload_folder_path, known.filename)
 
@@ -150,7 +169,8 @@ def upload_image_video():
                             request_upload_folder_path,
                             request_frames_folder_path,
                             tolerance=tolerance,
-                            face_match_threshold=threshold)
+                            face_match_threshold=threshold,
+                            sharpness_threshold=sharpness)
 
 
 @app.route('/')

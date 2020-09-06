@@ -33,3 +33,4 @@ wcwidth
 WebOb
 Werkzeug
 zipp
+scikit-image

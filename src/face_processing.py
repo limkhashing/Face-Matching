@@ -5,7 +5,7 @@ import face_recognition
 from PIL import Image
 from flask import jsonify
 
-from src.OCR.oct_process import process_ocr
+from src.OCR.ocr_process import process_ocr
 from src.delete_files import delete_files
 from src.orientation_processing import extract_frames_from_video
 from src.sharpness_processing import calculate_sharpness
