@@ -69,4 +69,3 @@ def process_ocr(image_path):
         # cv2.imshow('image', img)
         # cv2.waitKey()
     return None, None
-

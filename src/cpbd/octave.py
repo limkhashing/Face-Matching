@@ -12,7 +12,7 @@ from skimage.filters.edges import HSOBEL_WEIGHTS
 
 
 def sobel(image):
-    # type: (numpy.ndarray) -> numpy.ndarray
+    # type: (np.ndarray) -> np.ndarray
     """
     Find edges using the Sobel approximation to the derivatives.
 
@@ -32,7 +32,7 @@ def sobel(image):
 
 
 def _simple_thinning(strength):
-    # type: (numpy.ndarray) -> numpy.ndarray
+    # type: (np.ndarray) -> np.ndarray
     """
     Perform a very simple thinning.
 

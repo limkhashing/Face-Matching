@@ -44,7 +44,7 @@ class TestFaceMatching(unittest.TestCase):
     def test_api_route(self):
         url = '/api/upload'
 
-        mock_image = os.path.join(test_data_path, 'my my_ic.jpg')
+        mock_image = os.path.join(test_data_path, 'my ic.jpg')
         mock_video = os.path.join(test_data_path, 'my video.mov')
         data = dict(
             known=(io.BytesIO(b"known"), mock_image),
@@ -60,7 +60,7 @@ class TestFaceMatching(unittest.TestCase):
 
     def test_bad_route(self):
         url = '/api/upload'
-        mock_image = os.path.join(test_data_path, 'my my_ic.jpg')
+        mock_image = os.path.join(test_data_path, 'my ic.jpg')
         data = dict(
             known=(io.BytesIO(b"known"), mock_image),
             tolerance=0.50,
@@ -94,7 +94,7 @@ class TestFaceMatching(unittest.TestCase):
             ocr_result = pytesseract.image_to_string(img).upper()
             results = ocr_result.split()
 
-            # check my_ic
+            # check my ic
             for result in results:
                 regex_found = re.search(IC_NUMBER_REGREX, result)
                 if bool(regex_found):
@@ -170,7 +170,7 @@ class TestFaceMatching(unittest.TestCase):
             return linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))
 
     def test_face_matching(self):
-        ic_path = os.path.join(test_data_path, 'my my_ic.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
         driving_license_path = os.path.join(test_data_path, 'my driving license.jpg')
 
         image_ic = api.load_image_file(ic_path)
@@ -189,7 +189,7 @@ class TestFaceMatching(unittest.TestCase):
         self.tolerance = 0.50
         self.threshold = 0.80
 
-        ic_path = os.path.join(test_data_path, 'my my_ic.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
         driving_license_path = os.path.join(test_data_path, 'my driving license.jpg')
 
         image_ic = api.load_image_file(ic_path)
@@ -207,7 +207,7 @@ class TestFaceMatching(unittest.TestCase):
         self.tolerance = 0.50
         self.threshold = 0.80
 
-        ic_path = os.path.join(test_data_path, 'my my_ic.jpg')
+        ic_path = os.path.join(test_data_path, 'my ic.jpg')
         passport_path = os.path.join(test_data_path, 'passport.jpg')
 
         image_ic = api.load_image_file(ic_path)

@@ -27,7 +27,7 @@ WIDTH_JNB = np.concatenate([5 * np.ones(51), 3 * np.ones(205)])
 
 
 def compute(image):
-    # type: (numpy.ndarray) -> float
+    # type: (np.ndarray) -> float
     """Compute the sharpness metric for the given data."""
 
     # convert the image to double for further processing
@@ -47,7 +47,7 @@ def compute(image):
 
 
 def marziliano_method(edges, image):
-    # type: (numpy.ndarray, numpy.ndarray) -> numpy.ndarray
+    # type: (np.ndarray, np.ndarray) -> np.ndarray
     """
     Calculate the widths of the given edges.
 
@@ -141,7 +141,7 @@ def marziliano_method(edges, image):
 
 
 def _calculate_sharpness_metric(image, edges, edge_widths):
-    # type: (numpy.array, numpy.array, numpy.array) -> numpy.float64
+    # type: (np.array, np.array, np.array) -> np.float64
 
     # get the size of image
     img_height, img_width = image.shape
@@ -189,13 +189,13 @@ def _calculate_sharpness_metric(image, edges, edge_widths):
 
 
 def is_edge_block(block, threshold):
-    # type: (numpy.ndarray, float) -> bool
+    # type: (np.ndarray, float) -> bool
     """Decide whether the given block is an edge block."""
     return np.count_nonzero(block) > (block.size * threshold)
 
 
 def get_block_contrast(block):
-    # type: (numpy.ndarray) -> int
+    # type: (np.ndarray) -> int
     return int(np.max(block) - np.min(block))
 
 # if __name__ == '__main__':
