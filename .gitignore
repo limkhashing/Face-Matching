@@ -110,3 +110,6 @@ venv.bak/
 # real life test data
 /tests/test_data_ic_driving_passport/
 /Documentation/
+/sample_data/my real ic.jpg
+/sample_data/fake ic.jpg
+/sample_data/fake ic near.jpg

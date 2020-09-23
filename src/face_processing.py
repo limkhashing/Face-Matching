@@ -34,7 +34,7 @@ def compare_face(known_path, video_path, request_upload_folder_path, request_fra
     is_match = None
     confidences_list = []
     known_face_encoding = []
-    sharpness_difference = None
+    sharpness_similarity = None
 
     # Load the uploaded image file
     known_image = face_recognition.load_image_file(known_path)
@@ -55,7 +55,7 @@ def compare_face(known_path, video_path, request_upload_folder_path, request_fra
         face_image = known_image[top:bottom, left:right]
         cropped_face = Image.fromarray(face_image)
         cropped_face.save(cropped_face_path, "JPEG")
-        sharpness_difference = calculate_sharpness(known_path, cropped_face_path)
+        sharpness_similarity = calculate_sharpness(known_path, cropped_face_path)
 
     #####
     # Part 2
@@ -108,7 +108,7 @@ def compare_face(known_path, video_path, request_upload_folder_path, request_fra
         print("Did not found face in either image or video. Can't proceed to compare with image")
         delete_files(request_upload_folder_path, request_frames_folder_path)
         return jsonify(get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence,
-                                         sharpness_difference, file_type, ocr_results))
+                                         sharpness_similarity, file_type, ocr_results))
 
     #####
     # Part 4
@@ -117,7 +117,7 @@ def compare_face(known_path, video_path, request_upload_folder_path, request_fra
     # and return the result as Json
     #####
     final_confidence = sum(confidences_list) / float(len(confidences_list))
-    if final_confidence >= face_match_threshold and sharpness_difference > sharpness_threshold:
+    if final_confidence >= face_match_threshold and sharpness_similarity > sharpness_threshold:
         is_match = True
     else:
         is_match = False
@@ -131,18 +131,18 @@ def compare_face(known_path, video_path, request_upload_folder_path, request_fra
     delete_files(request_upload_folder_path, request_frames_folder_path)
 
     return jsonify(
-        get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_difference,
+        get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_similarity,
                           file_type, ocr_results))
 
 
-def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_difference,
+def get_json_response(face_found_in_image, face_found_in_video, is_match, final_confidence, sharpness_similarity,
                       file_type, ocr_results):
     return {
         "face_found_in_image": face_found_in_image,
         "face_found_in_video": face_found_in_video,
         "is_match": is_match,
         "confidence": final_confidence,
-        "sharpness_difference": sharpness_difference,
+        "sharpness_similarity": sharpness_similarity,
         "file_type": file_type,
         "ocr_results": ocr_results
     }
