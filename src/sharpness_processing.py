@@ -12,8 +12,7 @@ from src.cpbd import compute
 def calculate_sharpness(known_image_path, cropped_image_path):
     known_image = imread(known_image_path, pilmode='L')
     cropped_image = imread(cropped_image_path, pilmode='L')
-    sharpness_differences = compute(known_image) - compute(cropped_image)
-    return sharpness_differences
+    return compute(known_image) - compute(cropped_image)
 
 # Many people suggest this method. But not gonna use this
 # def variance_of_laplacian(image_path):

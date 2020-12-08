@@ -16,7 +16,7 @@ from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS,
     image_size_threshold, max_resize, source_type_image, source_type_video
 from src.face_processing import compare_face
 
-template_dir = os.path.abspath('templates')
+template_dir = os.path.abspath('../templates')
 static = os.path.abspath('static')
 app = Flask(__name__, template_folder=template_dir, static_url_path='', static_folder=static)
 
