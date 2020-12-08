@@ -9,7 +9,7 @@ import pytesseract
 from face_recognition import api
 from flask import Flask
 
-from src.app import app
+from app import app
 from tests.regex_patterns import IC_NUMBER_REGREX, IC_PATTERNS, DRIVING_DATE_REGREX, DRIVING_IC_NUMBER_REGREX, \
     DRIVING_PATTERN, PASSPORT_DATE_REGREX, PASSPORT_PATTERNS
 
