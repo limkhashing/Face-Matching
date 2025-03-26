@@ -29,8 +29,8 @@ class TestFaceMatching(unittest.TestCase):
         self.tolerance = ''
         self.threshold = ''
 
-        pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
-        # pytesseract.pytesseract.tesseract_cmd = r'D:/Tesseract-OCR/tesseract.exe'
+        # TODO replace with your tesseract path
+        # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
     # executed after each test
     def tearDown(self):

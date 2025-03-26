@@ -9,7 +9,6 @@ import cv2
 import request_id
 from flask import Flask, jsonify, request, render_template
 from request_id import RequestIdMiddleware
-from werkzeug.serving import make_server
 
 from src.OCR.crop_morphology import crop_morphology
 from src.constants import ALLOWED__PICTURE_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, frames_folder, upload_folder, \
@@ -182,8 +181,5 @@ def index():
 
 
 if __name__ == '__main__':
-    # add own IPV4 address for debug
-    # In android, put android:usesCleartextTraffic="true" in manifest application tag
-    # for allow cross domain to LocalHost
-    server = make_server('0.0.0.0', 8080, middleware)
-    server.serve_forever()
+    # In android, put android:usesCleartextTraffic="true" in manifest application tag for allow cross domain to LocalHost
+    app.run(host='0.0.0.0', port=5100)
