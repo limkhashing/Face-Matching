@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.8
+FROM python:3.9-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
@@ -18,18 +18,21 @@ RUN apt-get update && \
     libfontconfig1 \
     libice6 \
     libxext6 \
+    libopenblas-dev \
+    liblapack-dev \
+    libopenblas-dev \
+    liblapack-dev \
     wget \
     tesseract-ocr \
     tesseract-ocr-eng \
     libgl1-mesa-glx \
+    ffmpeg \
+    build-essential \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Install libpng12 from the provided URL
-RUN wget https://launchpad.net/~ubuntu-security/+archive/ubuntu/ppa/+build/15108504/+files/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-    dpkg -i libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-    rm libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
-
-# Install Python dependencies
+# Upgrade pip and install Python dependencies
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
@@ -40,4 +43,3 @@ EXPOSE 5100
 
 # Run the application
 CMD ["python", "app.py"]
-#CMD ["gunicorn", "--pythonpath", "src", "app:app", "-w", "3", "--timeout", "60", "--max-requests", "1200", "--log-level=DEBUG"]
