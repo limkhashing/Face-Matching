@@ -1,0 +1,47 @@
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+env/
+.venv/
+.env/
+
+# Ignore version control directories
+.git/
+.gitignore
+
+# Ignore IDE/editor specific files
+.idea/
+.vscode/
+*.swp
+
+# Ignore build and distribution directories
+build/
+dist/
+*.egg-info/
+
+# Ignore static and media files
+static/
+media/
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore other unnecessary files
+*.log
+*.tmp
+
+# Ignore test files
+tests/
+sample_data
+
+# Ignore configuration files from heroku and travis
+.slugignore
+.travis.yml
+Aptfile
+codecov.yml
+Procfile
