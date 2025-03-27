@@ -181,5 +181,4 @@ def index():
 
 
 if __name__ == '__main__':
-    # In android, put android:usesCleartextTraffic="true" in manifest application tag for allow cross domain to LocalHost
     app.run(host='0.0.0.0', port=5100)

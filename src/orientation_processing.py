@@ -1,4 +1,4 @@
-# Remember to put FFMPEG in variable path
+# TODO install and put your FFMPEG in environment path
 
 import math
 import os

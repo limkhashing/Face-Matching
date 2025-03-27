@@ -8,8 +8,7 @@ from src.OCR.regex_patterns import IC_PATTERNS, DRIVING_PATTERN, IC_NUMBER_REGRE
 
 # TODO replace with your tesseract path
 # If you don't have tesseract executable in your PATH, try search within your environment and include the following for tesseract_cmd
-# pytesseract.pytesseract.tesseract_cmd = r'D:/Tesseract-OCR/tesseract.exe'
-pytesseract.pytesseract.tesseract_cmd = '/app/vendor/tesseract-ocr/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 IDENTITY_CARD = "IDENTITY CARD"
 DRIVING_LICENSE = "DRIVING LICENSE"
