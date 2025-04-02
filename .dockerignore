@@ -24,7 +24,8 @@ dist/
 *.egg-info/
 
 # Ignore static and media files
-static/
+static/Architecture.jpg
+static/Face Matching Flowchart.jpg
 media/
 
 # Ignore Docker-related files
