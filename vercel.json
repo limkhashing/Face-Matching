@@ -1,29 +1,14 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "*.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "Dockerfile",
-      "use": "@vercel/docker"
-    }
+    { "src": "*.py", "use": "@vercel/python" },
+    { "src": "*.html", "use": "@vercel/static" }
   ],
   "redirects": [
-    {
-      "source": "/",
-      "destination": "/app"
-    }
+    { "source": "/", "destination": "/app" }
   ],
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/app"
-    }
-  ]
+    { "source": "/(.*)", "destination": "/app" }
+  ],
+  "installCommand": "apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-eng ffmpeg build-essential cmake"
 }
