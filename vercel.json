@@ -9,10 +9,10 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "redirects": [
     {
-      "src": "/",
-      "destination": "app.py"
+      "source": "/",
+      "destination": "/app.py"
     }
   ]
 }
